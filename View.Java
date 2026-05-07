@@ -55,4 +55,8 @@ public class View {
             System.out.println(output);
         }
     }
+
+    public void printStatement (String statement) {
+        System.out.println(statement);
+    }
 }
