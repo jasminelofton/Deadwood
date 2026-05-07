@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /*
     The controller acts as the connection between the view and the model of this program.
     The controller will... 
@@ -10,49 +12,58 @@
        The model class : Moderator.Java
 */
 public class Controller {
+    private View view;
+    private Moderator moderator;
+    private final Scanner scan = new Scanner(System.in);
 
-    /* User will type into command line when its 
-        their turn. A list of words is only accessible.
-        Everything else is rejected. Rejected inputs
-        are reasked for input.
+    public Controller (Moderator moderator, View view) {
+        this.moderator = moderator;
+        this.view = view;
+    }
 
-        --""
-        --""
-        --""
-        --""
-    */
-    public void setPlayers(String playerString) {
-        switch(playerString)
+    public void setView(View view) {
+        this.view = view;
+    }
 
-        case playerString == "":
-            break;
-            
-        
-        default:        
+    public void setModerator(Moderator moderator) {
+        this.moderator = moderator;
+    }
+
+    public void handlePlayerCountInput() {
+        int playerCount;
+        boolean success;
+
+        String requestInputFromView = """
+            Type the number of players playing today\n
+             (Note: Must be between 1-8 players)\n
+            """;
+
+        String invalidInputFromView = """
+            Not a valid number of players\n 
+            """;
+
+        success = true;
+        while(success) {
+            view.printStatement(requestInputFromView);
+
+            //change string into an integer
+            try {
+                playerCount = Integer.parseInt(scan.nextLine()); 
+                moderator.setUpPlayerRules(playerCount);
+                success = false;
+            } 
+            catch (NumberFormatException e) {
+                view.printStatement(invalidInputFromView);
+            }
+            catch (IllegalArgumentException e) {
+                view.printStatement(invalidInputFromView);
+            }
+        }
+
 
     }
 
 
-    public String handleInput(String input) {
-        switch(input)
-
-        case input == "":
-            break;
-            
-        case input == "":
-            break;
-
-        case input == "":
-            break;
-        
-        case input == "":
-            break;
-
-        case input == "":
-            break;
-        
-        default:
-
-    }
+    
 
 }
