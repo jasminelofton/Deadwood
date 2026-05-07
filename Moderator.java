@@ -1,10 +1,12 @@
 import java.util.ArrayList;
+import org.w3c.dom.Document;
 
 public class Moderator {
-    ArrayList<Player> players;
-    private final static int maxPlayers = 8;
+    private final static int MAXPLAYERS = 8;
     private int daysLeft;
-    private Controller controller;
+    private String XMLBoardFile = "board.xml";
+    private ArrayList<Player> players = new ArrayList<Player>();
+    private ArrayList<Room> rooms = new ArrayList<Room>();
 
     public void endDay() {
         daysLeft--;
@@ -14,14 +16,8 @@ public class Moderator {
         return daysLeft;
     }
 
-    public void setController(Controller controller) {
-        this.controller = controller;
-    }
-
     public void setUpPlayerRules (int playerCount) {
         validatePlayerCount(playerCount);
-        players = new ArrayList<Player>(playerCount);
-
         for (int i = 0; i < playerCount; i++) {
             players.add(new Player());
         }
@@ -32,8 +28,8 @@ public class Moderator {
        // player.setRoom(/*TODO */});
      }
 
-    private void validatePlayerCount(int playerCount) {
-        if ((playerCount < 1) || (playerCount > maxPlayers)) {
+    private void validatePlayerCount(int playerCount) throws NumberFormatException{
+        if ((playerCount < 1) || (playerCount > MAXPLAYERS)) {
             throw new NumberFormatException();
         }
     }
@@ -75,6 +71,44 @@ public class Moderator {
             default -> 4;
         };
     }
+
+    public void getAndSetRoomsFromXMLDoc() throws Exception{
+        Document document = null;
+        XMLParser xmlparser = new XMLParser();
+        ArrayList<String> namesOfAllRooms;
+
+        document = xmlparser.newBoardDoc(XMLBoardFile);
+        namesOfAllRooms = xmlparser.retrieveLocationNames(document);
+        createRooms(namesOfAllRooms);
+    }
+
+    private void createRooms(ArrayList<String> names) {
+        String name;
+        for (int i = 0; i < names.size(); i++) {
+            name = names.get(i);
+
+            switch(name) {
+                case "trailer":
+                    rooms.add(new Trailer("Trailers"));
+                    break;
+                case "office":
+                    rooms.add(new CastingOffice("Casting Office"));
+                    break;
+                default:
+                    rooms.add(new ActingSet(name));
+                    break;
+            }
+        }
+    }
+
+    private void setRoomNeighbors() {}
+
+    private void setActingSetTakes() {}
+
+    private void setActingSetParts() {}
+
+    private void setCastingOfficeUpgrade() {}
+
 
     
 }

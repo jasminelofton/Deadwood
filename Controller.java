@@ -1,4 +1,3 @@
-import java.util.Scanner;
 
 /*
     The controller acts as the connection between the view and the model of this program.
@@ -12,11 +11,10 @@ import java.util.Scanner;
        The model class : Moderator.Java
 */
 public class Controller {
-    private View view;
-    private Moderator moderator;
-    private final Scanner scan = new Scanner(System.in);
+    private final View view;
+    private final Moderator moderator;
 
-    final static String introduction = 
+    private final String introduction = 
     """
     Welcome to Deadwood!
     """;
@@ -25,7 +23,7 @@ public class Controller {
     final static String ANSI_RED = "\u001B[31m";
     final static String ANSI_RESET = "\u001B[0m";
 
-    final static String menuList = 
+    private final String menuList = 
     """
     [m] move a step\n
     [a] act\n
@@ -34,6 +32,7 @@ public class Controller {
     [n] nothing\n
     [u] upgrade\n
     [e] end turn
+    [q] quit game
     """;
 
 
@@ -67,7 +66,7 @@ public class Controller {
 
             //change string into an integer
             try {
-                playerCount = Integer.parseInt(scan.nextLine()); 
+                playerCount = Integer.parseInt(view.AskForStatement()); 
                 moderator.setUpPlayerRules(playerCount);
                 success = false;
             } 
@@ -81,12 +80,35 @@ public class Controller {
         view.printStatement(validInputFromView);
     }
 
+    private void roomSetUp() {
+        String boardFailure = 
+        """
+        Failure to set up board
+        """;
+        String settingUp = 
+        """
+        Setting up Board...
+        """;
+        String complete = 
+        """
+        Setup complete.
+        """;
+
+        view.printStatement(settingUp);
+        try {
+            moderator.getAndSetRoomsFromXMLDoc();
+            view.printStatement(complete);
+        }
+        catch (Exception e) {
+            view.printStatement(boardFailure + e);
+            System.exit(1);
+        }
+    }
+
     public void startGame() {
         view.printStatement(introduction);
+        roomSetUp();
         handlePlayerCountInput();
         view.printStatement(menuList);
     }
-
-    
-
 }
