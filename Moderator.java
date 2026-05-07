@@ -4,11 +4,7 @@ public class Moderator {
     ArrayList<Player> players;
     private final static int maxPlayers = 8;
     private int daysLeft;
-
-
-    public Moderator() {
-
-    }
+    private Controller controller;
 
     public void endDay() {
         daysLeft--;
@@ -18,8 +14,9 @@ public class Moderator {
         return daysLeft;
     }
 
-
-
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
 
     public void setUpPlayerRules (int playerCount) {
         validatePlayerCount(playerCount);
@@ -31,8 +28,8 @@ public class Moderator {
         calcAndSetPlayerStartRanks(playerCount);
         calcAndSetPlayerStartCredits(playerCount);
         calcAndSetStartDaysLeft(playerCount);
-        players.forEach((player) -> {
-        player.setRoom(/*TODO */});
+       // players.forEach((player) -> {
+       // player.setRoom(/*TODO */});
      }
 
     private void validatePlayerCount(int playerCount) {
@@ -78,4 +75,6 @@ public class Moderator {
             default -> 4;
         };
     }
+
+    
 }

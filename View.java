@@ -5,18 +5,6 @@ public class View {
     Scanner scan = new Scanner(System.in);
     Controller controller;
 
-    final static String introduction = """""";
-
-    final static String menuList = 
-    """
-    [m] move a step\n
-    [a] act\n
-    [t] take a role\n
-    [r] rehearse\n
-    [n] nothing\n
-    [u] upgrade\n
-    """;
-
     private boolean continueDeterminant;
 
     public void View() {

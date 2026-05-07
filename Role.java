@@ -1,4 +1,4 @@
-* This class represents a role for a board or card that a player can act as. 
+/* This class represents a role for a board or card that a player can act as. 
  * Each role has a name, a level indicating its player minimum level requirenment
  * to act on this role, and a description of the role blurb.
  */
