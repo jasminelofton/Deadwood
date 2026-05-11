@@ -2,25 +2,24 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ActingSet extends Room {
-    private int counters;
-    private ArrayList<Dice> die = new ArrayList<Dice>();
+    private int shotCounter;
+    private SceneCard sceneCard;
+    private List<Role> roles;
 
-    public ActingSet (String name) {
+
+
+    public actingSet (String name) {
         super(name);
     }
 
-    // need to figure what this does
-    private static int roleDice(){
+    public int[] act(Role role){
 
     }
 
-    // aware what this does, has general base 
-    public int[] Act(Role role){
-        counters--;
+    public Void revealSceneCard() {
 
     }
 
-    // base
     private int[] wrapScene(){
 
     }
