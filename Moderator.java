@@ -104,23 +104,27 @@ public class Moderator {
     // The XML file is parsed in XMLParser.java. This method will
     // completely set all the rooms using helper functions.
     public void getAndSetRoomsFromXMLDoc() throws Exception{
-        Document document = null;
         XMLParser xmlparser = new XMLParser();
-        ArrayList<String> namesOfAllRooms;
+        Document document = xmlparser.newBoardDoc(XMLBoardFile);
 
-        document = xmlparser.newBoardDoc(XMLBoardFile);
-        namesOfAllRooms = xmlparser.retrieveLocationNames(document);
-        createRooms(namesOfAllRooms);
+        createRooms(xmlparser, document);
+        setRoomsNeighbors(xmlparser, document);
+
+        // setActingSetTakes(xmlparser, document);
+        // setActingSetParts(xmlparser, document);
+        // setCastingOfficeUpgrade(xmlparser, document);
     }
 
     // Helper function to getAndSetRoomsFromXMLDoc.
     // Creates room object subclasses of either trailer, casting office,
     // or an acting set. All room objects are added to the rooms
     // arraylist. Note: This only creates and names a room.
-    private void createRooms(ArrayList<String> names) {
+    private void createRooms(XMLParser xmlparser, Document document) throws Exception{
         String name;
-        for (int i = 0; i < names.size(); i++) {
-            name = names.get(i);
+        ArrayList<String> namesOfAllRooms = xmlparser.retrieveLocationNames(document);
+
+        for (int i = 0; i < namesOfAllRooms.size(); i++) {
+            name = namesOfAllRooms.get(i);
 
             switch(name) {
                 case "trailer":
@@ -136,13 +140,19 @@ public class Moderator {
         }
     }
 
-    private void setRoomNeighbors() {}
+    private void setRoomsNeighbors(XMLParser xmlparser, Document document) throws Exception {
+        ArrayList<String> neighbors = new ArrayList<>();
+        for (int i = 0; i < rooms.size(); i++) {
+          neighbors = xmlparser.retrieveNeighborsNames(document, rooms.getName());
+          rooms.get(i).setNeighbors(neighbors);
+        }
+    }
 
-    private void setActingSetTakes() {}
+    private void setActingSetTakes(XMLParser xmlparser, Document document) {}
 
-    private void setActingSetParts() {}
+    private void setActingSetParts(XMLParser xmlparser, Document document) {}
 
-    private void setCastingOfficeUpgrade() {}
+    private void setCastingOfficeUpgrade(XMLParser xmlparser, Document document) {}
 
 
     

@@ -10,18 +10,18 @@ public class ActingSet extends Room {
     }
 
     // need to figure what this does
-    private static int roleDice(){
-
+    private static int roleDice() {
+        return -1;
     }
 
     // aware what this does, has general base 
     public int[] Act(Role role){
         counters--;
-
+        return null;
     }
 
     // base
     private int[] wrapScene(){
-
+        return null;
     }
 }
