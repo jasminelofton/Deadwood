@@ -154,6 +154,8 @@ public class Moderator {
 
     private void setCastingOfficeUpgrade(XMLParser xmlparser, Document document) {}
 
+    private void wrapScene() {}
+
 
     
 }

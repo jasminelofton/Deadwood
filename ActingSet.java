@@ -1,27 +1,53 @@
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.List;
+import java.util.Optional;
 
 public class ActingSet extends Room {
-    private int counters;
-    private ArrayList<Dice> die = new ArrayList<Dice>();
+    private String name;
+    private List<Room> adjacencyList;
+    private int shotCounter;
+    private Optional<SceneCard> sceneCard;
+    private List<Role> offCardRoles;
 
-    public ActingSet (String name) {
-        super(name);
+
+    public String getName() {
+        return name;
     }
 
-    // need to figure what this does
-    private static int roleDice() {
-        return -1;
+    public List<Room> getAdjacencyList() {
+        return adjacencyList;
     }
 
-    // aware what this does, has general base 
-    public int[] Act(Role role){
-        counters--;
-        return null;
+    public int getShotCounter() {
+        return shotCounter;
     }
 
-    // base
-    private int[] wrapScene(){
-        return null;
+    public Optional<SceneCard> getSceneCard() {
+        return sceneCard;
     }
+
+    public void setSceneCard(SceneCard sceneCard) {
+        this.sceneCard = Optional.of(sceneCard);
+    }
+
+    public void removeSceneCard() {
+        this.sceneCard = Optional.empty();
+    }
+
+    public List<Role> getOffCardRoles() {
+        return offCardRoles;
+    }
+
+    public List<Role> getOffCardRoles(int rank) {
+        List<Role> roles = new ArrayList<>();
+
+        for (Role r : offCardRoles) {
+            if (r.getLevel() <= rank) {
+                roles.add(r);
+            }
+        }
+
+        return roles;
+    }
+
 }

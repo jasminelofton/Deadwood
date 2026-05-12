@@ -7,25 +7,31 @@
 
 class Role {
 
-    private String RoleName;
-    private int Level;
-    private String Description;
+    private String roleName;
+    private int level;
+    private String description;
+    private Boolean available;
 
-    public Role(String RoleName, int Level, String Description) {
-        this.RoleName = RoleName;
-        this.Level = Level;
-        this.Description = Description;
+    public void role(String roleName, int level, String description) {
+        this.roleName = roleName;
+        this.level = level;
+        this.description = description;
+        this.available = false;
     }
 
     public String getRoleName() {
-        return RoleName;
+        return roleName;
     }
 
     public int getLevel() {
-        return Level;
+        return level;
     }
 
     public String getDescription() {
-        return Description;
+        return description;
+    }
+
+    public Boolean getAvailable() {
+        return available;
     }
 }
