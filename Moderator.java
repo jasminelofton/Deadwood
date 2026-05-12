@@ -144,6 +144,8 @@ public class Moderator {
 
     private void setCastingOfficeUpgrade() {}
 
+    private void wrapScene() {}
+
 
     
 }
