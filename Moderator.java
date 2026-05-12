@@ -143,9 +143,10 @@ public class Moderator {
     private void setRoomsNeighbors(XMLParser xmlparser, Document document) throws Exception {
         ArrayList<String> neighbors = new ArrayList<>();
         for (int i = 0; i < rooms.size(); i++) {
-          neighbors = xmlparser.retrieveNeighborsNames(document, rooms.getName());
+          neighbors = xmlparser.retrieveNeighborsNames(document, rooms.get(i).getName());
           rooms.get(i).setNeighbors(neighbors);
         }
+
     }
 
     private void setActingSetTakes(XMLParser xmlparser, Document document) {}

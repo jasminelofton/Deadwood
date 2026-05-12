@@ -17,6 +17,53 @@ public class XMLParser {
         return document;
     }
 
+    private Node returnLocationNodeListShortCut(Document document, String locationNodeName, String locationAttrName, String type) {
+        Element root = document.getDocumentElement();
+        NodeList locationsNodeList; // list of all objects partaining to an element name "set" "office" "trailer"
+        Node location; // node of the chosen object <set name="Train Station">
+        NodeList locationNodeList; // child nodes of the chosen object <neighbors> <take> <parts>
+        Node nodeType;
+        int loop;
+        //!TESTER
+        //int temp = root.getChildNodes();                
+        // for (int i = 0; i < temp.getLength(); i++) {
+        //     System.out.println(temp.item(i).getNodeName());
+        // }
+
+        locationsNodeList = root.getElementsByTagName(locationNodeName); //set, trailer,office
+
+        // !TESTER
+        // for (int i = 0; i < locationsNodeList.getLength(); i++) {
+        //     System.out.println(locationsNodeList.item(i).getNodeName());
+        // }
+
+        // Only partaining to an acting set, this will ensure we recieve the right set.
+        if (locationAttrName != null) {
+            loop = 0;
+            while (!(location = locationsNodeList.item(loop)).getAttributes().getNamedItem("name").getNodeValue().equals(locationAttrName)) {
+                loop++;
+            }
+        } else {
+            loop = 0;
+            while (!((location = locationsNodeList.item(loop)).getNodeName()).equals(locationNodeName)) {
+                loop++;
+            }
+        }
+
+        locationNodeList = location.getChildNodes();
+
+        //!TESTER
+        // for (int i = 0; i < locationNodeList.getLength(); i++) {
+        //     System.out.println(locationNodeList.item(i).getNodeName());
+        // }
+        loop = 0;
+        while (!(nodeType = locationNodeList.item(loop)).getNodeName().equals(type)) {
+            loop++;
+        }
+        System.out.println(nodeType.getNodeName());
+        return nodeType;
+    }
+
     public ArrayList<String> retrieveLocationNames(Document document) throws Exception {
         Element root = document.getDocumentElement();
         NodeList locations = root.getChildNodes();
@@ -51,48 +98,16 @@ public class XMLParser {
     }
 
     public ArrayList<String> retrieveNeighborsNames(Document document, String locationName) throws Exception {
-        Element root = document.getDocumentElement();
         ArrayList<String> neighborNames = new ArrayList<>();
-        NodeList locationsNodeList;
-        Node location;
-        NodeList locationNodeList;
-        NodeList locationNeighbors;
+        Node neighbors;
         Node neighbor;
         NodeList neighborsNodeList;        
         String neighborName;
-        NodeList temp;
-        int loop;
 
         switch(locationName) {
             case "Casting Office":
-
-                //!TESTER
-                //temp = root.getChildNodes();                
-                // for (int i = 0; i < temp.getLength(); i++) {
-                //     System.out.println(temp.item(i).getNodeName());
-                // }
-
-                locationsNodeList = root.getElementsByTagName("office");
-
-                // !TESTER
-                // for (int i = 0; i < locationsNodeList.getLength(); i++) {
-                //     System.out.println(locationsNodeList.item(i).getNodeName());
-                // }
-
-                location = locationsNodeList.item(0);
-
-                locationNodeList = location.getChildNodes();
-                //!TESTER
-                // for (int i = 0; i < locationNodeList.getLength(); i++) {
-                //     System.out.println(locationNodeList.item(i).getNodeName());
-                // }
-
-                loop = 0;
-                while (!((neighbor = locationNodeList.item(loop)).getNodeName()).equals("neighbors")) {
-                    loop++;
-                }
-
-                neighborsNodeList = neighbor.getChildNodes();
+                neighbors = returnLocationNodeListShortCut(document, "office", null, "neighbors");
+                neighborsNodeList = neighbors.getChildNodes();
 
                 for (int i = 0; i < neighborsNodeList.getLength(); i++) {
                     neighbor = neighborsNodeList.item(i);
@@ -103,33 +118,8 @@ public class XMLParser {
                 }
                 break;
             case "Trailers":
-                //!TESTER
-                //temp = root.getChildNodes();                
-                // for (int i = 0; i < temp.getLength(); i++) {
-                //     System.out.println(temp.item(i).getNodeName());
-                // }
-
-                locationsNodeList = root.getElementsByTagName("trailer");
-
-                // !TESTER
-                // for (int i = 0; i < locationsNodeList.getLength(); i++) {
-                //     System.out.println(locationsNodeList.item(i).getNodeName());
-                // }
-
-                location = locationsNodeList.item(0);
-
-                locationNodeList = location.getChildNodes();
-                //!TESTER
-                // for (int i = 0; i < locationNodeList.getLength(); i++) {
-                //     System.out.println(locationNodeList.item(i).getNodeName());
-                // }
-
-                loop = 0;
-                while (!((neighbor = locationNodeList.item(loop)).getNodeName()).equals("neighbors")) {
-                    loop++;
-                }
-
-                neighborsNodeList = neighbor.getChildNodes();
+                neighbors = returnLocationNodeListShortCut(document, "trailer", null, "neighbors");
+                neighborsNodeList = neighbors.getChildNodes();
 
                 for (int i = 0; i < neighborsNodeList.getLength(); i++) {
                     neighbor = neighborsNodeList.item(i);
@@ -140,33 +130,8 @@ public class XMLParser {
                 }
                 break;
             default:
-                //!TESTER
-                //temp = root.getChildNodes();                
-                // for (int i = 0; i < temp.getLength(); i++) {
-                //     System.out.println(temp.item(i).getNodeName());
-                // }
-
-                locationsNodeList = root.getElementsByTagName("set");
-
-                // !TESTER
-                // for (int i = 0; i < locationsNodeList.getLength(); i++) {
-                //     System.out.println(locationsNodeList.item(i).getNodeName());
-                // }
-
-                location = locationsNodeList.item(0);
-
-                locationNodeList = location.getChildNodes();
-                //!TESTER
-                // for (int i = 0; i < locationNodeList.getLength(); i++) {
-                //     System.out.println(locationNodeList.item(i).getNodeName());
-                // }
-
-                loop = 0;
-                while (!((neighbor = locationNodeList.item(loop)).getNodeName()).equals("neighbors")) {
-                    loop++;
-                }
-
-                neighborsNodeList = neighbor.getChildNodes();
+                neighbors = returnLocationNodeListShortCut(document, "set", locationName, "neighbors");
+                neighborsNodeList = neighbors.getChildNodes();
 
                 for (int i = 0; i < neighborsNodeList.getLength(); i++) {
                     neighbor = neighborsNodeList.item(i);

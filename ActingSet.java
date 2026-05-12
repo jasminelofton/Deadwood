@@ -3,16 +3,15 @@ import java.util.List;
 import java.util.Optional;
 
 public class ActingSet extends Room {
-    private String name;
     private List<Room> adjacencyList;
     private int shotCounter;
     private Optional<SceneCard> sceneCard;
     private List<Role> offCardRoles;
 
-
-    public String getName() {
-        return name;
+    public ActingSet(String name) {
+        super(name);
     }
+
 
     public List<Room> getAdjacencyList() {
         return adjacencyList;
