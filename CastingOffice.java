@@ -48,4 +48,8 @@ public class CastingOffice extends Room {
     public Map<Integer, int[]> getUpgradeOptions(int rank){
         return upgradeOptions;
     }
+
+    public void setUpgrades(ArrayList<String> levels, ArrayList<String> Currencies, ArrayList<String> amts) {
+        //TODO
+    }
 }

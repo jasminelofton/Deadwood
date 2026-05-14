@@ -60,7 +60,8 @@ public class XMLParser {
         while (!(nodeType = locationNodeList.item(loop)).getNodeName().equals(type)) {
             loop++;
         }
-        System.out.println(nodeType.getNodeName());
+        //!TESTER
+        //System.out.println(nodeType.getNodeName());
         return nodeType;
     }
 
@@ -143,6 +144,69 @@ public class XMLParser {
                 break;
         }
         return neighborNames;
+    }
+    public ArrayList<String> retrieveActingSetTakes (Document document, String locationName) throws Exception {
+        Node takes;
+        NodeList takesNodeList;
+        Node take;
+        String takeValue;
+        ArrayList<String> takeValues = new ArrayList<>();
+
+        takes = returnLocationNodeListShortCut(document, "set", locationName, "takes");
+        takesNodeList = takes.getChildNodes();
+
+        for (int i = 0; i < takesNodeList.getLength(); i++) {
+            take = takesNodeList.item(i);
+            if (take.getNodeType() == 1) {
+                takeValue = take.getAttributes().getNamedItem("number").getNodeValue();
+                takeValues.add(takeValue);
+            }
+        }
+        return takeValues;
+    }
+
+    public ArrayList<String> retrieveActingSetParts (Document document, String locationName, String attr) throws Exception {
+        Node parts;
+        NodeList partsNodeList;
+        Node part;
+        String partName;
+        ArrayList<String> partNames = new ArrayList<>();
+
+        parts = returnLocationNodeListShortCut(document, "set", locationName, "parts");
+        partsNodeList = parts.getChildNodes();
+
+        for (int i = 0; i < partsNodeList.getLength(); i++) {
+            part = partsNodeList.item(i);
+            if (part.getNodeType() == 1) {
+                try {
+                partName = part.getAttributes().getNamedItem(attr).getNodeValue();                    
+                } catch (Exception e) {
+                    partName = part.getTextContent();
+                }                  
+                partNames.add(partName);
+            }
+        }
+        return partNames;
+    }
+
+    public ArrayList<String> retrieveCastingOfficeParts(Document document, String locationName, String attr) throws Exception {
+        Node upgrades;
+        NodeList upgradesNodeList;
+        Node upgrade;
+        String upgradeValue;
+        ArrayList<String> upgradeValues = new ArrayList<>();
+
+        upgrades = returnLocationNodeListShortCut(document, "office", locationName, "upgrades");
+        upgradesNodeList = upgrades.getChildNodes();
+
+        for (int i = 0; i < upgradesNodeList.getLength(); i++) {
+            upgrade = upgradesNodeList.item(i);
+            if (upgrade.getNodeType() == 1) {
+                upgradeValue = upgrade.getAttributes().getNamedItem(attr).getNodeValue();
+                upgradeValues.add(upgradeValue);
+            }
+        }
+        return upgradeValues;       
     }
 
 }

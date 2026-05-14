@@ -109,9 +109,9 @@ public class Moderator {
 
         createRooms(xmlparser, document);
         setRoomsNeighbors(xmlparser, document);
+        setActingSetTakes(xmlparser, document);
+        setActingSetParts(xmlparser, document);
 
-        // setActingSetTakes(xmlparser, document);
-        // setActingSetParts(xmlparser, document);
         // setCastingOfficeUpgrade(xmlparser, document);
     }
 
@@ -146,14 +146,49 @@ public class Moderator {
           neighbors = xmlparser.retrieveNeighborsNames(document, rooms.get(i).getName());
           rooms.get(i).setNeighbors(neighbors);
         }
-
     }
 
-    private void setActingSetTakes(XMLParser xmlparser, Document document) {}
+    private void setActingSetTakes(XMLParser xmlparser, Document document) throws Exception {
+         ArrayList<String> takes = new ArrayList<>();
+        for (int i = 0; i < rooms.size(); i++) {
+            if (rooms.get(i).getName() != "Casting Office" && rooms.get(i).getName() != "Trailers") {
+                takes = xmlparser.retrieveActingSetTakes(document, rooms.get(i).getName());
+                ((ActingSet)rooms.get(i)).setTakes(takes);
+            }
+        }       
+    }
 
-    private void setActingSetParts(XMLParser xmlparser, Document document) {}
+    private void setActingSetParts(XMLParser xmlparser, Document document) throws Exception {
+           ArrayList<String> parts = new ArrayList<>();
+           ArrayList<String> levels = new ArrayList<>();
+           ArrayList<String> lines = new ArrayList<>();
+        for (int i = 0; i < rooms.size(); i++) {
+            if (rooms.get(i).getName() != "Casting Office" && rooms.get(i).getName() != "Trailers") {
+                parts = xmlparser.retrieveActingSetParts(document, rooms.get(i).getName(), "name");
+                levels = xmlparser.retrieveActingSetParts(document, rooms.get(i).getName(), "level");
+                lines = xmlparser.retrieveActingSetParts(document, rooms.get(i).getName(), "line");
 
-    private void setCastingOfficeUpgrade(XMLParser xmlparser, Document document) {}
+                ((ActingSet)rooms.get(i)).setParts(parts, levels, lines);
+            }
+        }             
+    }
+
+    private void setCastingOfficeUpgrade(XMLParser xmlparser, Document document) throws Exception {
+        ArrayList<String> levels = new ArrayList<>();
+        ArrayList<String> currencies = new ArrayList<>();
+        ArrayList<String> amts = new ArrayList<>();
+
+        for (int i = 0; i < rooms.size(); i++) {
+            if (rooms.get(i).getName().equals("Casting Office")) {
+                levels = xmlparser.retrieveCastingOfficeParts(document, rooms.get(i).getName(), "level");
+                currencies = xmlparser.retrieveCastingOfficeParts(document, rooms.get(i).getName(), "currency");
+                amts = xmlparser.retrieveCastingOfficeParts(document, rooms.get(i).getName(), "amt");
+
+                ((CastingOffice)rooms.get(i)).setUpgrades(levels, currencies, amts);
+            }
+        }       
+
+    }
 
     private void wrapScene() {}
 

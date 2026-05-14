@@ -7,6 +7,8 @@ public class ActingSet extends Room {
     private int shotCounter;
     private Optional<SceneCard> sceneCard;
     private List<Role> offCardRoles;
+    private ArrayList<String> parts;
+    private ArrayList <String> takes; // May convert to Integer later if needed.
 
     public ActingSet(String name) {
         super(name);
@@ -47,6 +49,14 @@ public class ActingSet extends Room {
         }
 
         return roles;
+    }
+
+    public void setTakes(ArrayList<String> takes) {
+        this.takes = takes;
+    }
+
+    public void setParts(ArrayList<String> parts, ArrayList<String> levels, ArrayList<String> lines) {
+        this.parts = parts;
     }
 
 }
