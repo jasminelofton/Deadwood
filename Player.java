@@ -3,9 +3,12 @@ public class Player {
     private int dollars;
     private int rank;
     private Room room;
+    private boolean working;
 
-    public Player() {
+    public Player(Room trailer) {
+        room = trailer;
         dollars = 0;
+        working = false;
     }
 
     public void setRank(int rank) {
@@ -22,6 +25,14 @@ public class Player {
     
     public void setDollars(int dollars) {
         this.dollars = dollars;
+    }
+
+    public void setWorking(boolean working) {
+        this.working = working;
+    }
+
+    public boolean isWorking() {
+        return working;
     }
 
     public int getCredits() {

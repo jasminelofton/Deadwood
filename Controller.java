@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 // The controller acts as the connection between the view and the model of this program.
 //     The controller will... 
 //     1. The controller recieves input from view class.
@@ -29,8 +30,8 @@ public class Controller {
     [r] rehearse\n
     [n] nothing\n
     [u] upgrade\n
-    [e] end turn
-    [q] quit game
+    [e] end turn\n
+    [q] quit game\n
     """;
 
 
@@ -130,6 +131,109 @@ public class Controller {
         }
     }
 
+    private void handlePlayerTurnInput() {
+        String input;
+        boolean completedFirstStepAction = false;
+        
+        while (true) {
+            view.printStatement(menuList);
+            input = view.AskForStatement();            
+            
+            switch(input) {
+                    case "m":
+                        // move
+                        if (completedFirstStepAction) {
+                            view.printStatement("You already moved/acted/rehearsed");
+                             break;
+                        }
+                        if (handleMove()) {
+                            completedFirstStepAction = true;
+                        }
+                        break;
+                    case "a":
+
+                        // act
+                        break;
+                    case "t":
+                        // take a role, (opt)second step action
+                        break;
+                    case "r":
+
+                        // rehearse
+                        break;
+                    case "u":
+                        // upgrade, (opt) second step action
+                        break;
+                    case "e":
+                        // end turn, (opt)second step action
+                        moderator.endTurn();
+                        return;
+                    case "q":
+                        // quit game, (opt) second step action
+                        System.exit(0);
+                    default:
+                        view.printStatement("Invalid input, please try again.");
+                        handlePlayerTurnInput();
+            }
+        }
+    }
+
+    private boolean handleMove() {
+        // move
+        ArrayList<Room> rooms;
+        Player currentPlayer;
+        String inputString;
+        int inputInt;
+
+        currentPlayer = moderator.getCurrentPlayer();
+
+        if (currentPlayer.isWorking()) {
+            view.printStatement("You cannot move while working on a role.");
+            return false;
+        }
+
+        rooms = moderator.getRooms();
+        view.printStatement("Pick a room:");
+        for (int i = 0; i < rooms.size(); i++) {
+            
+            view.printStatement("[" + i + "] " + rooms.get(i).getName());
+        }
+
+        // needs to be changed for later
+        inputString = view.AskForStatement();
+        inputInt = Integer.parseInt(inputString);
+
+        // needs logic
+
+        boolean isRoomANeighbor =currentPlayer.getRoom().getNeighbors().contains(rooms.get(inputInt).getName());
+        if (isRoomANeighbor) {
+            currentPlayer.setRoom(rooms.get(inputInt));
+            view.printStatement(("moved to " + rooms.get(inputInt).getName()));
+        } else {
+            view.printStatement("Not an adjacent room");
+            return false;
+        }
+
+        //successful move
+        return true;
+    }
+
+    private void handleAct() {
+        // act
+    }
+
+    private void handleTakeRole() {
+        // take a role
+    }
+
+    private void handleRehearse() {
+        // rehearse
+    }
+
+    private void handleUpgrade() {
+        // upgrade
+    }
+
     // This function will be called in main, this function begins 
     // the actual game, starting with initializing the board, 
     // setting up players, all the way to ending the game and closing
@@ -138,6 +242,13 @@ public class Controller {
         view.printStatement(introduction);
         roomSetUp();
         handlePlayerCountInput();
-        view.printStatement(menuList);
+
+        while (true) { //game
+            while (true) { //day
+                    view.printStatement("Player " + moderator.getCurrentPlayerNum() + "'s turn.");
+                    handlePlayerTurnInput();
+            }
+        }
     }
+
 }

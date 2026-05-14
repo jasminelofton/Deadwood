@@ -18,4 +18,8 @@ public class Room {
     public void setNeighbors(ArrayList<String> neighbors) {
         this.neighbors = neighbors;
     }
+
+    public ArrayList<String> getNeighbors() {
+        return neighbors;
+    }
 }

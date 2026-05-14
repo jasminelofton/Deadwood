@@ -5,58 +5,59 @@ import java.util.Optional;
 public class ActingSet extends Room {
     private List<Room> adjacencyList;
     private int shotCounter;
-    private Optional<SceneCard> sceneCard;
-    private List<Role> offCardRoles;
-    private ArrayList<String> parts;
+    private SceneCard sceneCard;
+    private ArrayList<Role> roles;    
     private ArrayList <String> takes; // May convert to Integer later if needed.
 
     public ActingSet(String name) {
         super(name);
+        roles = new ArrayList<>();
+        takes = new ArrayList<>();
+        sceneCard = null;
     }
 
 
-    public List<Room> getAdjacencyList() {
-        return adjacencyList;
+    public ArrayList<String> getAdjacentNeigbors() {
+        return neighbors;
     }
 
     public int getShotCounter() {
         return shotCounter;
     }
 
-    public Optional<SceneCard> getSceneCard() {
+    public SceneCard getSceneCard() {
         return sceneCard;
     }
 
     public void setSceneCard(SceneCard sceneCard) {
-        this.sceneCard = Optional.of(sceneCard);
+        this.sceneCard = sceneCard;
     }
 
     public void removeSceneCard() {
-        this.sceneCard = Optional.empty();
+        this.sceneCard = null;
     }
 
-    public List<Role> getOffCardRoles() {
-        return offCardRoles;
-    }
-
-    public List<Role> getOffCardRoles(int rank) {
-        List<Role> roles = new ArrayList<>();
-
-        for (Role r : offCardRoles) {
-            if (r.getLevel() <= rank) {
-                roles.add(r);
-            }
+    // should return roles from both the set and the scene card.
+    public ArrayList<Role> getAllRoles() throws IllegalStateException {
+        if (sceneCard == null) {
+            throw new IllegalStateException("No scene card on this acting set.");
         }
 
-        return roles;
+        ArrayList<Role> allRoles = new ArrayList<>(roles);
+        allRoles.addAll(sceneCard.getRoles());
+
+        return allRoles;
     }
 
     public void setTakes(ArrayList<String> takes) {
-        this.takes = takes;
+        this.takes = takes; // will likely need its own class later
+        shotCounter = takes.size();
     }
 
-    public void setParts(ArrayList<String> parts, ArrayList<String> levels, ArrayList<String> lines) {
-        this.parts = parts;
+    public void setRoles(ArrayList<String> parts, ArrayList<String> levels, ArrayList<String> lines) {
+        for (int i = 0; i < parts.size(); i++) {
+        roles.add(new Role(parts.get(i), levels.get(i), lines.get(i)));
+        }
     }
 
 }

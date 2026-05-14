@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import org.w3c.dom.Document;
 
@@ -9,6 +10,8 @@ public class Moderator {
     private String XMLBoardFile = "board.xml";
     private ArrayList<Player> players = new ArrayList<Player>();
     private ArrayList<Room> rooms = new ArrayList<Room>();
+    private Room specialTrailerRoom;
+    private int currentPlayer = 0;
 
     public void endDay() {
         daysLeft--;
@@ -16,6 +19,10 @@ public class Moderator {
 
     public int daysLeft() {
         return daysLeft;
+    }
+
+    public void endTurn () {
+        currentPlayer = (currentPlayer + 1) % players.size();
     }
 
     // This method will completely set up all the necessary
@@ -29,14 +36,12 @@ public class Moderator {
         validatePlayerCount(playerCount);
         //create all objects for the number of players.
         for (int i = 0; i < playerCount; i++) {
-            players.add(new Player());
+            players.add(new Player(specialTrailerRoom));
         }
         //set the data of all these players.
         calcAndSetPlayerStartRanks(playerCount);
         calcAndSetPlayerStartCredits(playerCount);
         calcAndSetStartDaysLeft(playerCount);
-       // players.forEach((player) -> {
-       // player.setRoom(/*TODO */});
      }
 
     // Helper function to setUpPlayerRules.
@@ -129,6 +134,7 @@ public class Moderator {
             switch(name) {
                 case "trailer":
                     rooms.add(new Trailer("Trailers"));
+                    specialTrailerRoom = rooms.getLast();
                     break;
                 case "office":
                     rooms.add(new CastingOffice("Casting Office"));
@@ -158,6 +164,8 @@ public class Moderator {
         }       
     }
 
+    // The name is parts because the board.xml defines each role information as such, but within the 
+    // game, these parts will be defined by the name role(s).
     private void setActingSetParts(XMLParser xmlparser, Document document) throws Exception {
            ArrayList<String> parts = new ArrayList<>();
            ArrayList<String> levels = new ArrayList<>();
@@ -167,8 +175,7 @@ public class Moderator {
                 parts = xmlparser.retrieveActingSetParts(document, rooms.get(i).getName(), "name");
                 levels = xmlparser.retrieveActingSetParts(document, rooms.get(i).getName(), "level");
                 lines = xmlparser.retrieveActingSetParts(document, rooms.get(i).getName(), "line");
-
-                ((ActingSet)rooms.get(i)).setParts(parts, levels, lines);
+                ((ActingSet)rooms.get(i)).setRoles(parts, levels, lines);
             }
         }             
     }
@@ -190,7 +197,21 @@ public class Moderator {
 
     }
 
-    private void wrapScene() {}
+    public ArrayList<Room> getRooms() {
+        return rooms;
+    }
+
+    public Player getCurrentPlayer() {
+        return players.get(currentPlayer);
+    }
+
+    public int getCurrentPlayerNum() {
+        return currentPlayer;
+    }
+
+    private void wrapScene() {
+
+    }
 
 
     
