@@ -31,7 +31,7 @@ public class Controller {
     [n] nothing\n
     [u] upgrade\n
     [e] end turn\n
-    [q] quit game\n
+    [q] quit game
     """;
 
 
@@ -131,11 +131,39 @@ public class Controller {
         }
     }
 
+    private String otherPlayersInfo() {
+        StringBuilder otherPlayersInfo = new StringBuilder("Other players info: ");
+        ArrayList<Player> players = moderator.getPlayers();
+        int currentPlayerNum = moderator.getCurrentPlayerNum();
+
+        for (int i = 0; i < players.size(); i++) {
+            if (i != currentPlayerNum) {
+                Player player = players.get(i);
+                otherPlayersInfo.append("[Player " + (i+1)  + "'s Location: " + player.getRoom().getName() + "] ");
+
+            }
+        }
+        otherPlayersInfo.append("\n");
+        return otherPlayersInfo.toString();
+    }
+
+    private String playerInfo () {
+        Player currentPlayer = moderator.getCurrentPlayer();
+
+        return "Player " + (moderator.getCurrentPlayerNum()+1) + " info: [" +
+                "Rank: " + currentPlayer.getRank() + ", " +
+                "Dollars: " + currentPlayer.getDollars() + ", " +
+                "Credits: " + currentPlayer.getCredits() + ", " +
+                "Location: " + currentPlayer.getRoom().getName() + ", " +
+                "Working: " + currentPlayer.isWorking() + "]\n";
+    }
     private void handlePlayerTurnInput() {
         String input;
         boolean completedFirstStepAction = false;
         
         while (true) {
+            view.printStatement(playerInfo());
+            view.printStatement(otherPlayersInfo());
             view.printStatement(menuList);
             input = view.AskForStatement();            
             
@@ -143,7 +171,7 @@ public class Controller {
                     case "m":
                         // move
                         if (completedFirstStepAction) {
-                            view.printStatement("You already moved/acted/rehearsed");
+                            view.printStatement(ANSI_RED + "You already moved/acted/rehearsed" + ANSI_RESET + "\n");
                              break;
                         }
                         if (handleMove()) {
@@ -172,7 +200,7 @@ public class Controller {
                         // quit game, (opt) second step action
                         System.exit(0);
                     default:
-                        view.printStatement("Invalid input, please try again.");
+                        view.printStatement(ANSI_RED + "Invalid input, please try again." + ANSI_RESET + "\n");
                         handlePlayerTurnInput();
             }
         }
@@ -185,34 +213,52 @@ public class Controller {
         String inputString;
         int inputInt;
 
+        rooms = moderator.getRooms();
         currentPlayer = moderator.getCurrentPlayer();
 
+        // Player mustn't be working on a set to move.
         if (currentPlayer.isWorking()) {
-            view.printStatement("You cannot move while working on a role.");
+            view.printStatement(ANSI_RED + "You cannot move while working on a role." + ANSI_RESET + "\n");
             return false;
         }
 
-        rooms = moderator.getRooms();
-        view.printStatement("Pick a room:");
-        for (int i = 0; i < rooms.size(); i++) {
+        // continually ask for input until user picks a valid number.
+        while (true) {
             
-            view.printStatement("[" + i + "] " + rooms.get(i).getName());
+            // prints all rooms to view
+            for (int i = 0; i < rooms.size(); i++) {
+                view.printStatement("[" + i + "] " + rooms.get(i).getName() + "\n");
+            }
+
+            view.printStatement("Player " + (moderator.getCurrentPlayerNum()+1) + " can move to: " + currentPlayer.getRoom().getNeighbors().toString());
+            view.printStatement("Pick a room:"); 
+
+            inputString = view.AskForStatement();
+
+            try {
+                inputInt = Integer.parseInt(inputString);
+
+                if (inputInt < 0 || inputInt >= rooms.size()) throw new NumberFormatException(ANSI_RED + "wrong number" + ANSI_RESET + "\n");
+
+                // Checks if room is a neighbor of the players current location.
+                boolean isRoomANeighbor =currentPlayer.getRoom().getNeighbors().contains(rooms.get(inputInt).getName());
+
+                if (!isRoomANeighbor) throw new IllegalArgumentException(ANSI_RED + "not a neighbor" + ANSI_RESET + "\n");
+                    currentPlayer.setRoom(rooms.get(inputInt));
+                    view.printStatement((ANSI_GREEN +"moved to " + rooms.get(inputInt).getName()) + ANSI_RESET + "\n");    
+                    break;            
+            } 
+
+            catch (NumberFormatException e) {
+                view.printStatement(e.getMessage());
+            }
+
+            catch (IllegalArgumentException e) {
+                view.printStatement(e.getMessage());
+            }
         }
 
-        // needs to be changed for later
-        inputString = view.AskForStatement();
-        inputInt = Integer.parseInt(inputString);
 
-        // needs logic
-
-        boolean isRoomANeighbor =currentPlayer.getRoom().getNeighbors().contains(rooms.get(inputInt).getName());
-        if (isRoomANeighbor) {
-            currentPlayer.setRoom(rooms.get(inputInt));
-            view.printStatement(("moved to " + rooms.get(inputInt).getName()));
-        } else {
-            view.printStatement("Not an adjacent room");
-            return false;
-        }
 
         //successful move
         return true;
@@ -245,7 +291,7 @@ public class Controller {
 
         while (true) { //game
             while (true) { //day
-                    view.printStatement("Player " + moderator.getCurrentPlayerNum() + "'s turn.");
+                    view.printStatement("Player " + (moderator.getCurrentPlayerNum()+1) + "'s turn.\n");
                     handlePlayerTurnInput();
             }
         }
