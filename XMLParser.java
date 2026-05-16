@@ -208,5 +208,119 @@ public class XMLParser {
         }
         return upgradeValues;       
     }
+    
+
+    /**
+     * CArd Parsign4 
+     */
+
+
+    public Document newCardsDoc(String XMLCardsFile) throws Exception {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document document = db.parse(XMLCardsFile);
+        return document;
+    }
+ 
+    public ArrayList<SceneCard> parseCards(Document document) throws Exception {
+        ArrayList<SceneCard> cards = new ArrayList<>();
+        Element root = document.getDocumentElement();
+        NodeList cardNodes = root.getElementsByTagName("card");
+ 
+        for (int i = 0; i < cardNodes.getLength(); i++) {
+            Node cardNode = cardNodes.item(i);
+            
+            if (cardNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element cardElement = (Element) cardNode;
+                
+                String name = cardElement.getAttribute("name");
+                String img = cardElement.getAttribute("img");
+                int budget = Integer.parseInt(cardElement.getAttribute("budget"));
+                Scene scene = parseScene(cardElement);
+                ArrayList<Role> roles = parseRoles(cardElement);
+                
+                SceneCard card = new SceneCard(name, img, budget, scene, roles);
+
+                cards.add(card);
+            }
+        }
+        
+        return cards;
+    }
+
+    public Deck createDeck(Document document) throws Exception {
+        ArrayList<SceneCard> cards = parseCards(document);
+        Deck deck = new Deck(cards);
+
+        return deck;
+    }
+
+    private Scene parseScene(Element cardElement) {
+        NodeList sceneNodes = cardElement.getElementsByTagName("scene");
+        
+        if (sceneNodes.getLength() > 0) {
+            Element sceneElement = (Element) sceneNodes.item(0);
+            int number = Integer.parseInt(sceneElement.getAttribute("number"));
+            String description = sceneElement.getTextContent().trim();
+            return new Scene(number, description);
+        }
+        
+        return null;
+    }
+ 
+    private ArrayList<Role> parseRoles(Element cardElement) {
+        ArrayList<Role> roles = new ArrayList<>();
+        NodeList partNodes = cardElement.getElementsByTagName("part");
+        
+        for (int i = 0; i < partNodes.getLength(); i++) {
+            Node partNode = partNodes.item(i);
+            
+            if (partNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element partElement = (Element) partNode;
+                
+                String name = partElement.getAttribute("name");
+                String level = partElement.getAttribute("level");
+
+                String line = parseLine(partElement);
+                
+                Role part = new Role(name, level, line);
+                
+                // Area area = parseArea(partElement);
+                // part.setArea(area);
+                
+                roles.add(part);
+            }
+        }
+        
+        return roles;
+    }
+ 
+    private Area parseArea(Element partElement) {
+        NodeList areaNodes = partElement.getElementsByTagName("area");
+        
+        if (areaNodes.getLength() > 0) {
+            Element areaElement = (Element) areaNodes.item(0);
+            int x = Integer.parseInt(areaElement.getAttribute("x"));
+            int y = Integer.parseInt(areaElement.getAttribute("y"));
+            int h = Integer.parseInt(areaElement.getAttribute("h"));
+            int w = Integer.parseInt(areaElement.getAttribute("w"));
+            return new Area(x, y, h, w);
+        }
+        
+        return null;
+    }
+ 
+    private String parseLine(Element partElement) {
+        NodeList lineNodes = partElement.getElementsByTagName("line");
+        
+        if (lineNodes.getLength() > 0) {
+            Element lineElement = (Element) lineNodes.item(0);
+            return lineElement.getTextContent().trim();
+        }
+        
+        return "";
+    }
+ 
+
 
 }
