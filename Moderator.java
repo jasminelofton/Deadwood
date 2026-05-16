@@ -1,4 +1,5 @@
 import java.lang.reflect.Array;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import org.w3c.dom.Document;
 
@@ -8,8 +9,10 @@ public class Moderator {
     private final static int MAXPLAYERS = 8;
     private int daysLeft;
     private String XMLBoardFile = "board.xml";
+    private String XMLCardFile = "cards.xml";
     private ArrayList<Player> players = new ArrayList<Player>();
     private ArrayList<Room> rooms = new ArrayList<Room>();
+    private Deck deck = new Deck();
     private Room specialTrailerRoom;
     private int currentPlayer = 0;
 
@@ -195,6 +198,22 @@ public class Moderator {
             }
         }       
 
+    }
+
+    public void getAndSetDeckFromXMLDoc() throws Exception {
+        XMLParser xmlParser = new XMLParser();
+        Document document = xmlParser.newCardsDoc(XMLCardFile);
+        
+        ArrayList<SceneCard> sceneCards = xmlParser.parseCards(document);
+        deck.setCards(sceneCards);
+    }
+
+    public void dealSceneCards() {
+        deck.shuffle();
+
+        for (Room room : rooms) {
+            continue;
+        }
     }
 
     public ArrayList<Room> getRooms() {

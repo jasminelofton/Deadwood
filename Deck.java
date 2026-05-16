@@ -15,6 +15,10 @@ public class Deck {
         this.currentIndex = 0;
     }
 
+    public void setCards(ArrayList<SceneCard> cards) {
+        this.cards = cards;
+    }
+
     public void shuffle() {
         Collections.shuffle(cards);
         currentIndex = 0;
