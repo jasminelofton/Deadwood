@@ -212,7 +212,9 @@ public class Moderator {
         deck.shuffle();
 
         for (Room room : rooms) {
-            continue;
+            if (room instanceof ActingSet set) {
+                set.setSceneCard(deck.dealCard());
+            }
         }
     }
 
