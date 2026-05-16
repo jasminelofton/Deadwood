@@ -155,7 +155,7 @@ public class Controller {
                 "Dollars: " + currentPlayer.getDollars() + ", " +
                 "Credits: " + currentPlayer.getCredits() + ", " +
                 "Location: " + currentPlayer.getRoom().getName() + ", " +
-                "Working: " + currentPlayer.isWorking() + "]\n";
+                "Working: " + currentPlayer.hasRole() + "]\n";
     }
     private void handlePlayerTurnInput() {
         String input;
@@ -217,7 +217,7 @@ public class Controller {
         currentPlayer = moderator.getCurrentPlayer();
 
         // Player mustn't be working on a set to move.
-        if (currentPlayer.isWorking()) {
+        if (currentPlayer.hasRole()) {
             view.printStatement(ANSI_RED + "You cannot move while working on a role." + ANSI_RESET + "\n");
             return false;
         }
@@ -257,9 +257,6 @@ public class Controller {
                 view.printStatement(e.getMessage());
             }
         }
-
-
-
         //successful move
         return true;
     }

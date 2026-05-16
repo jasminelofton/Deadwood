@@ -3,12 +3,12 @@ public class Player {
     private int dollars;
     private int rank;
     private Room room;
-    private boolean working;
+    private Role role;
 
     public Player(Room trailer) {
         room = trailer;
         dollars = 0;
-        working = false;
+        role = null;
     }
 
     public void setRank(int rank) {
@@ -27,12 +27,13 @@ public class Player {
         this.dollars = dollars;
     }
 
-    public void setWorking(boolean working) {
-        this.working = working;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
-    public boolean isWorking() {
-        return working;
+    public boolean hasRole() {
+        if (role == null) return false;
+        return true;
     }
 
     public int getCredits() {
