@@ -202,6 +202,7 @@ public class Controller {
                         break;
                     case "u":
                         // upgrade, (opt) second step action
+                        handleUpgrade();
                         break;
                     case "e":
                         // end turn, (opt)second step action
@@ -233,14 +234,14 @@ public class Controller {
             return false;
         }
 
+        // prints all rooms to view
+        for (int i = 0; i < rooms.size(); i++) {
+            view.printStatement("[" + i + "] " + rooms.get(i).getName() + "\n");
+        }
+
         // continually ask for input until user picks a valid number.
         while (true) {
             
-            // prints all rooms to view
-            for (int i = 0; i < rooms.size(); i++) {
-                view.printStatement("[" + i + "] " + rooms.get(i).getName() + "\n");
-            }
-
             view.printStatement("Player " + (moderator.getCurrentPlayerNum()+1) + " can move to: " + currentPlayer.getRoom().getNeighbors().toString());
             view.printStatement("Pick a room:"); 
 
@@ -370,7 +371,6 @@ public class Controller {
         // upgrade
         Player currPlayer;
         CastingOffice cO;
-        int inputInt;
         String inputString;
         cO = moderator.getCastingOffice();
 
@@ -390,20 +390,24 @@ public class Controller {
             try {
                 view.CastingOffice_WelcomeMessage(cO.getRanks(), cO.getMoneyPrices(), cO.getCreditPrices(), currPlayer.getDollars(), currPlayer.getCredits());
 
-                // 2-7
+                // 0-5
                 input = Integer.parseInt(view.AskForStatement());
 
-                // [7] is the option to leave the casting office front desk
-                if (input == 7) {
+                // [5] is the option to leave the casting office front desk
+                if (input == 5) {
                     view.CastingOffice_Leaving();
                     return;
                 }
                 
-                // if the input is not within a rank value (2-6)
-                if (!cO.getRanks().contains(input)) 
-                    throw new IllegalArgumentException(input + " is not a viable rank.");
+                // increases to rank values
+                // ex: option 0 -> rank of 2
+                int requestedRank = input += 2;
 
-                    view.CastingOffice_DollarsOrCredits();
+                // if the input is not within a options value (0-5)
+                if (!cO.getRanks().contains(requestedRank)) 
+                    throw new IllegalArgumentException(input + " is not a viable option.");
+
+                view.CastingOffice_DollarsOrCredits();
 
                     // (d or c)
                     inputString = (view.AskForStatement()).toLowerCase();
@@ -412,17 +416,23 @@ public class Controller {
                     if (inputString.contains("d")) {
 
                         // ex: 6 dollars < 2 required dollars ?
-                        if (currPlayer.getDollars() < cO.getMoneyCost(input))
-                            throw new IllegalArgumentException(input + " Not enough dollars.");
+                        if (currPlayer.getDollars() < cO.getMoneyCost(requestedRank))
+                            throw new IllegalArgumentException(currPlayer.getDollars() + " is not enough dollars.\n");
+
+                        moderator.playerUpgraded(requestedRank, cO.getMoneyCost(input), 'd');
+
                     }
                     else if (inputString.contains("c")) {
-                        if (currPlayer.getDollars() < cO.getCreditCost(input))
-                            throw new IllegalArgumentException(input + " Not enough credits.");                       
+                        if (currPlayer.getCredits() < cO.getCreditCost(input))
+                            throw new IllegalArgumentException(currPlayer.getCredits() + " is not enough credits.\n");
+                        
+                        moderator.playerUpgraded(requestedRank, cO.getCreditCost(input), 'c');                       
                     }
                     else {
-                        throw new IllegalArgumentException(input + " is not a viable d or c.");
+                        throw new IllegalArgumentException(input + " is not a viable d or c.\n");
                     }
 
+                    view.CastingOffice_Choice(requestedRank);
                     
             } catch (Exception e) {
                 view.printStatement(e.getMessage());

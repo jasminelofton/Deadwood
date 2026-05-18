@@ -84,5 +84,11 @@ public class Player {
         dollars += n;
     }
 
-    
+    public void removeCredits(int n) {
+        credits -= n;
+    }
+
+    public void removeDollars(int n) {
+        dollars -= n;
+    }    
 }

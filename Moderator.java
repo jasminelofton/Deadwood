@@ -155,7 +155,16 @@ public class Moderator {
     private void setRoomsNeighbors(XMLParser xmlparser, Document document) throws Exception {
         ArrayList<String> neighbors = new ArrayList<>();
         for (int i = 0; i < rooms.size(); i++) {
-          neighbors = xmlparser.retrieveNeighborsNames(document, rooms.get(i).getName());
+            neighbors = xmlparser.retrieveNeighborsNames(document, rooms.get(i).getName());
+
+            // board.xml labels Casting office as office, must change back.
+            if (neighbors.contains("office"))
+                neighbors.set(neighbors.indexOf("office"), "Casting Office");
+
+            // board.xml labels Trailers as trailer, must change back.
+            if (neighbors.contains("trailer"))
+                neighbors.set(neighbors.indexOf("trailer"), "Trailers");
+
           rooms.get(i).setNeighbors(neighbors);
         }
     }
@@ -283,7 +292,18 @@ public class Moderator {
     public CastingOffice getCastingOffice() {
            return specialCastingOfficeRoom;
     }
-    
+
+    public void playerUpgraded(int rank, int currency, char n) {
+        // paid by dollars
+        if (n == 'd') {
+            players.get(currentPlayer).removeDollars(currency);
+        } else { //paid by credits
+            players.get(currentPlayer).removeCredits(currency);
+        }
+
+        players.get(currentPlayer).setRank(rank);
+    }
+
     public void handleTakeRole(Player player, Role role) {
 
         if (player.getRank() < role.getLevel()) {
