@@ -184,6 +184,7 @@ public class Controller {
                         break;
                     case "t":
                         // take a role, (opt)second step action
+
                         break;
                     case "r":
 
@@ -246,6 +247,9 @@ public class Controller {
                 if (!isRoomANeighbor) throw new IllegalArgumentException(ANSI_RED + "not a neighbor" + ANSI_RESET + "\n");
                     currentPlayer.setRoom(rooms.get(inputInt));
                     view.printStatement((ANSI_GREEN +"moved to " + rooms.get(inputInt).getName()) + ANSI_RESET + "\n");    
+                    if(rooms.get(inputInt) instanceof ActingSet set) {
+                        view.printStatement("Scene Info " + set.getSceneCard().toString());
+                    }
                     break;            
             } 
 

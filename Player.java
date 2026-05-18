@@ -1,14 +1,34 @@
+import java.util.Map;
+import java.util.HashMap;
+
 public class Player {
     private int credits;
     private int dollars;
     private int rank;
     private Room room;
     private Role role;
+    private Map<Role, Integer> rehearsalBonuses = new HashMap<>();
 
     public Player(Room trailer) {
         room = trailer;
         dollars = 0;
         role = null;
+    }
+
+    public void setRehearsalBonus(Role role, Integer n) {
+        if (rehearsalBonuses.containsKey(role)) {
+            rehearsalBonuses.put(role, rehearsalBonuses.get(role) + n);
+        } else {
+            rehearsalBonuses.put(role, n);
+        }
+    }
+
+    public void clearRehearsalBonus(Role role) {
+        rehearsalBonuses.remove(role);
+    }
+
+    public int getRehearsalBonus(Role role) {
+        return (int) rehearsalBonuses.get(role);
     }
 
     public void setRank(int rank) {
@@ -50,6 +70,10 @@ public class Player {
 
     public Room getRoom() {
         return room;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     

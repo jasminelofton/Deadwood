@@ -238,6 +238,49 @@ public class Moderator {
 
     }
 
+    public void handleAct(Player player) {
+
+        Dice dice = new Dice();
+
+        Room currentRoom = player.getRoom();
+        Role currentRole = player.getRole();
+        
+        ActingSet actingSet = (ActingSet) currentRoom;
+        SceneCard sceneCard = actingSet.getSceneCard();
+        int budget = sceneCard.getBudget();
+
+        
+        int totalRoll = dice.roll(1) + player.getPracticeChips();
+
+        
+        boolean success = (totalRoll >= budget);
+        
+        if (currentRole.isOnCard()) {
+            // On-card role
+            if (success) {
+                actingSet.removeShot(); // remove one shot counter
+                player.addCredits(2);
+            }
+            // Failed on-card roles get nothing
+        } else {
+            // Off-card role (extra)
+            if (success) {
+                actingSet.removeShot();
+                player.addDollars(1);
+                player.addCredits(1);
+            } else {
+                player.addDollars(1); // Still get $1 on failure
+            }
+        }
+        
+        // Check if scene is wrapped (all shots completed)
+        if (actingSet.getShotsRemaining() == 0) {
+            wrapScene(actingSet);
+        }
+        
+        // Clear practice chips after acting
+        player.clearPracticeChips();
+    }
 
     
 }
