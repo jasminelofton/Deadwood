@@ -282,8 +282,10 @@ public class XMLParser {
                 String level = partElement.getAttribute("level");
 
                 String line = parseLine(partElement);
+
+                Boolean isOnCard = Boolean.parseBoolean(partElement.getAttribute("onCard"));
                 
-                Role part = new Role(name, level, line);
+                Role part = new Role(name, level, line, isOnCard);
                 
                 // Area area = parseArea(partElement);
                 // part.setArea(area);
