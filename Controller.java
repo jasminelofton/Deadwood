@@ -180,12 +180,14 @@ public class Controller {
                         break;
                     case "a":
                         handleAct();
+                        break;
                     case "t":
 
                         handleTakeRole();
+                        break;
                     case "r":
 
-                        // rehearse
+                        handleRehearse();
                         break;
                     case "u":
                         // upgrade, (opt) second step action
@@ -333,7 +335,24 @@ public class Controller {
     }
 
     private void handleRehearse() {
-        // rehearse
+
+        Player currentPlayer = moderator.getCurrentPlayer();
+        
+        if (!currentPlayer.hasRole()) {
+
+            view.printStatement(ANSI_RED + "you must be working on a role to rehearse." + ANSI_RESET + "\n");
+
+            return;
+        }
+        
+        try {
+            moderator.handleRehearse(currentPlayer);
+
+            view.printStatement(ANSI_GREEN + "you rehearsed, add a practice chip."); 
+
+        } catch (Exception e) {
+            view.printStatement(ANSI_RED + "error while rehearsing:  " + e.getMessage() + ANSI_RESET + "\n");
+        }
     }
 
     private void handleUpgrade() {
