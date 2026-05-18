@@ -11,16 +11,22 @@ class Role {
     private String level;
     private String line;
     private Boolean available;
+    private Boolean onCard;
 
-    public Role(String part, String level, String line) {
+    public Role(String part, String level, String line, Boolean onCard) {
         this.part = part;
         this.level = level;
         this.line = line;
         this.available = true;
+        this.onCard = onCard;
     }
 
     public String getPart() {
         return part;
+    }
+
+    public boolean isOnCard() {
+        return onCard;
     }
 
     public String getLevel() {

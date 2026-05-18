@@ -37,6 +37,10 @@ public class ActingSet extends Room {
         this.sceneCard = null;
     }
 
+    public void removeShotCounter() {
+        shotCounter--;
+    }
+
     // should return roles from both the set and the scene card.
     public ArrayList<Role> getAllRoles() throws IllegalStateException {
         if (sceneCard == null) {
@@ -56,7 +60,7 @@ public class ActingSet extends Room {
 
     public void setRoles(ArrayList<String> parts, ArrayList<String> levels, ArrayList<String> lines) {
         for (int i = 0; i < parts.size(); i++) {
-        roles.add(new Role(parts.get(i), levels.get(i), lines.get(i)));
+            roles.add(new Role(parts.get(i), levels.get(i), lines.get(i), false));
         }
     }
 

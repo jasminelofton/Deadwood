@@ -234,7 +234,7 @@ public class Moderator {
         return currentPlayer;
     }
 
-    private void wrapScene() {
+    private void wrapScene(ActingSet set) {
 
     }
 
@@ -250,36 +250,31 @@ public class Moderator {
         int budget = sceneCard.getBudget();
 
         
-        int totalRoll = dice.roll(1) + player.getPracticeChips();
+        int totalRoll = dice.roll(1) + player.getRehearsalBonus(currentRole);
 
         
         boolean success = (totalRoll >= budget);
         
         if (currentRole.isOnCard()) {
-            // On-card role
             if (success) {
-                actingSet.removeShot(); // remove one shot counter
+                actingSet.removeShotCounter();
                 player.addCredits(2);
             }
-            // Failed on-card roles get nothing
         } else {
-            // Off-card role (extra)
             if (success) {
-                actingSet.removeShot();
+                actingSet.removeShotCounter();
                 player.addDollars(1);
                 player.addCredits(1);
             } else {
-                player.addDollars(1); // Still get $1 on failure
+                player.addDollars(1);
             }
         }
         
-        // Check if scene is wrapped (all shots completed)
-        if (actingSet.getShotsRemaining() == 0) {
+        if (actingSet.getShotCounter() == 0) {
             wrapScene(actingSet);
         }
         
-        // Clear practice chips after acting
-        player.clearPracticeChips();
+        player.clearRehearsalBonus(currentRole);
     }
 
     

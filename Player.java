@@ -76,5 +76,13 @@ public class Player {
         return role;
     }
 
+    public void addCredits(int n) {
+        credits += n;
+    }
+
+    public void addDollars(int n) {
+        dollars += n;
+    }
+
     
 }
