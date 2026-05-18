@@ -6,6 +6,7 @@ public class CastingOffice extends Room {
     public List<Integer> moneyPrices;
     public List<Integer> creditPrices;
     private Map<Integer, int[]> upgradeOptions;
+    
 
     
     public CastingOffice(String name) {
@@ -33,15 +34,15 @@ public class CastingOffice extends Room {
         return instructions;
     }
 
-    public List<Integer> getRanks(int rank){
+    public List<Integer> getRanks(){
         return ranks;
     }
 
-    public List<Integer> getMoneyPrices(int rank){
+    public List<Integer> getMoneyPrices(){
         return moneyPrices;
     }
 
-    public List<Integer> getCreditPrices(int rank){
+    public List<Integer> getCreditPrices(){
         return creditPrices;
     }
 

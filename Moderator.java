@@ -2,6 +2,7 @@ import java.lang.reflect.Array;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import org.w3c.dom.Document;
+import java.util.*;
 
 // Moderator handles all the logic that has to do with the board 
 // and player data and/or executing the actions of the entire game.
@@ -13,7 +14,8 @@ public class Moderator {
     private ArrayList<Player> players = new ArrayList<Player>();
     private ArrayList<Room> rooms = new ArrayList<Room>();
     private Deck deck = new Deck();
-    private Room specialTrailerRoom;
+    private Trailer specialTrailerRoom;
+    private CastingOffice specialCastingOfficeRoom;
     private int currentPlayer = 0;
 
     public void endDay() {
@@ -137,10 +139,11 @@ public class Moderator {
             switch(name) {
                 case "trailer":
                     rooms.add(new Trailer("Trailers"));
-                    specialTrailerRoom = rooms.getLast();
+                    specialTrailerRoom = (Trailer)rooms.getLast();
                     break;
                 case "office":
                     rooms.add(new CastingOffice("Casting Office"));
+                    specialCastingOfficeRoom = ((CastingOffice)rooms.getLast());
                     break;
                 default:
                     rooms.add(new ActingSet(name));
@@ -277,5 +280,7 @@ public class Moderator {
         player.clearRehearsalBonus(currentRole);
     }
 
-    
+    public CastingOffice getCastingOffice() {
+           return specialCastingOfficeRoom;
+    }
 }

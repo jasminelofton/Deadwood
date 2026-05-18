@@ -28,7 +28,6 @@ public class Controller {
     [a] act\n
     [t] take a role\n
     [r] rehearse\n
-    [n] nothing\n
     [u] upgrade\n
     [e] end turn\n
     [q] quit game
@@ -49,12 +48,12 @@ public class Controller {
 
         String requestInputFromView = """
             Type the number of players playing today.
-             (Note: Must be between 1-8 players)
+             (Note: Must be between 2-8 players)
             """;
 
         String invalidInputFromView = ANSI_RED + """ 
             Invalid number of players. Please try again.
-             (Note: Must be between 1-8 players) 
+             (Note: Must be between 2-8 players) 
             """ + ANSI_RESET;
 
         String validInputFromView = ANSI_GREEN + """
@@ -279,6 +278,66 @@ public class Controller {
 
     private void handleUpgrade() {
         // upgrade
+        Player currPlayer;
+        CastingOffice cO;
+        int inputInt;
+        String inputString;
+        cO = moderator.getCastingOffice();
+
+        currPlayer = moderator.getCurrentPlayer();
+
+        // Ensure the player is really in the casting office.
+        try {
+            if (!currPlayer.getRoom().getName().equals(cO.getName()))
+                throw new IllegalStateException("Location " + currPlayer.getRoom() + " is not " + cO.getName());
+        } catch (Exception e) {
+            view.printStatement(e.getMessage());
+            return;
+        }
+        
+        int input;        
+        while (true) {        
+            try {
+                view.CastingOffice_WelcomeMessage(cO.getRanks(), cO.getMoneyPrices(), cO.getCreditPrices(), currPlayer.getDollars(), currPlayer.getCredits());
+
+                // 2-7
+                input = Integer.parseInt(view.AskForStatement());
+
+                // [7] is the option to leave the casting office front desk
+                if (input == 7) {
+                    view.CastingOffice_Leaving();
+                    return;
+                }
+                
+                // if the input is not within a rank value (2-6)
+                if (!cO.getRanks().contains(input)) 
+                    throw new IllegalArgumentException(input + " is not a viable rank.");
+
+                    view.CastingOffice_DollarsOrCredits();
+
+                    // (d or c)
+                    inputString = (view.AskForStatement()).toLowerCase();
+
+                    //Tests players dollars or credits to the rank cost
+                    if (inputString.contains("d")) {
+
+                        // ex: 6 dollars < 2 required dollars ?
+                        if (currPlayer.getDollars() < cO.getMoneyCost(input))
+                            throw new IllegalArgumentException(input + " Not enough dollars.");
+                    }
+                    else if (inputString.contains("c")) {
+                        if (currPlayer.getDollars() < cO.getCreditCost(input))
+                            throw new IllegalArgumentException(input + " Not enough credits.");                       
+                    }
+                    else {
+                        throw new IllegalArgumentException(input + " is not a viable d or c.");
+                    }
+
+                    
+            } catch (Exception e) {
+                view.printStatement(e.getMessage());
+            }      
+        }     
     }
 
     // This function will be called in main, this function begins 
