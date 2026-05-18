@@ -179,9 +179,7 @@ public class Controller {
                         }
                         break;
                     case "a":
-
-                        // act
-                        break;
+                        handleAct();
                     case "t":
                         // take a role, (opt)second step action
 
@@ -266,7 +264,19 @@ public class Controller {
     }
 
     private void handleAct() {
-        // act
+        Player currentPlayer = moderator.getCurrentPlayer();
+        
+        if (!currentPlayer.hasRole()) {
+            view.printStatement(ANSI_RED + "must be working on a role to act." + ANSI_RESET + "\n");
+            return;
+        }
+        
+        try {
+            moderator.handleAct(currentPlayer);
+            view.printStatement(ANSI_GREEN + "Acting complete" + ANSI_RESET + "\n");
+        } catch (Exception e) {
+            view.printStatement(ANSI_RED + "Error while attempting to act " + e.getMessage() + ANSI_RESET + "\n");
+        }
     }
 
     private void handleTakeRole() {
