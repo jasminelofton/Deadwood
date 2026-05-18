@@ -314,9 +314,8 @@ public class XMLParser {
 
                 String line = parseLine(partElement);
 
-                Boolean isOnCard = Boolean.parseBoolean(partElement.getAttribute("onCard"));
                 
-                Role part = new Role(name, level, line, isOnCard);
+                Role part = new Role(name, level, line, true); // only using to retriev on card roles no, onCard attribute in xml either
                 
                 // Area area = parseArea(partElement);
                 // part.setArea(area);

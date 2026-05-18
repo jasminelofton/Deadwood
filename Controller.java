@@ -181,9 +181,8 @@ public class Controller {
                     case "a":
                         handleAct();
                     case "t":
-                        // take a role, (opt)second step action
 
-                        break;
+                        handleTakeRole();
                     case "r":
 
                         // rehearse
@@ -280,7 +279,57 @@ public class Controller {
     }
 
     private void handleTakeRole() {
-        // take a role
+
+        Player currentPlayer = moderator.getCurrentPlayer();
+        Room currentRoom = currentPlayer.getRoom();
+        
+        // state checks
+        if (currentPlayer.hasRole()) {
+            view.printStatement(ANSI_RED + "You have already taken another role" + ANSI_RESET + "\n");
+            return;
+        }
+        
+        if (!(currentRoom instanceof ActingSet)) {
+            view.printStatement(ANSI_RED + "You must be on an acting set to take a role" + ANSI_RESET + "\n");
+            return;
+        }
+        
+        ActingSet actingSet = (ActingSet) currentRoom;
+        ArrayList<Role> availableRoles = actingSet.getAllOpenRoles(currentPlayer.getRank());
+        
+        if (availableRoles.isEmpty()) {
+            view.printStatement(ANSI_RED + "no open roles for your rank." + ANSI_RESET + "\n");
+            return;
+        }
+        
+        view.printStatement("Available roles:\n");
+
+        for (int i = 0; i < availableRoles.size(); i++) {
+            Role role = availableRoles.get(i);
+            view.printStatement(i + " " + role.getPart() + " (Rank " + role.getLevel() + " " + (role.isOnCard() ? "On Card" : "Off Card") +")\n");
+        }
+        
+        view.printStatement("Please select a role");
+        String inputString = view.AskForStatement();
+        
+        try {
+            int inputInt = Integer.parseInt(inputString);
+            
+            if (inputInt < 0 || inputInt >= availableRoles.size()) {
+                throw new NumberFormatException("Invalid role number");
+            }
+            
+            Role selectedRole = availableRoles.get(inputInt);
+            moderator.handleTakeRole(currentPlayer, selectedRole);
+            
+            view.printStatement(ANSI_GREEN + "You have taken role: " + selectedRole.getPart() + ANSI_RESET + "\n");
+            
+        } catch (NumberFormatException e) {
+
+            view.printStatement(ANSI_RED + "Invalid input" + ANSI_RESET + "\n");
+        } catch (Exception e) {
+            view.printStatement(ANSI_RED + "Error occured taking role " + e.getMessage() + ANSI_RESET + "\n");
+        }
     }
 
     private void handleRehearse() {
