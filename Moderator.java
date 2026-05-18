@@ -291,5 +291,19 @@ public class Moderator {
         role.setAvailable(false);
     }
 
+    public void handleRehearse(Player player) {
+        Role currentRole = player.getRole();
+        player.addRehearsalBonus(currentRole, 1);
+        
+        Room currentRoom = player.getRoom();
+        ActingSet actingSet = (ActingSet) currentRoom;
+        SceneCard sceneCard = actingSet.getSceneCard();
+        int budget = sceneCard.getBudget();
+        
+        if (player.getRank() + player.getRehearsalBonus(currentRole) >= budget) {
+            // player must act
+        }
+    }
+
     
 }
