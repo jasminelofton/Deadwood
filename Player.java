@@ -1,5 +1,5 @@
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Player {
     private int credits;
@@ -15,7 +15,7 @@ public class Player {
         role = null;
     }
 
-    public void setRehearsalBonus(Role role, Integer n) {
+    public void addRehearsalBonus(Role role, Integer n) {
         if (rehearsalBonuses.containsKey(role)) {
             rehearsalBonuses.put(role, rehearsalBonuses.get(role) + n);
         } else {

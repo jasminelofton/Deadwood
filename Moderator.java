@@ -174,12 +174,12 @@ public class Moderator {
     // game, these parts will be defined by the name role(s).
     private void setActingSetParts(XMLParser xmlparser, Document document) throws Exception {
            ArrayList<String> parts = new ArrayList<>();
-           ArrayList<String> levels = new ArrayList<>();
+           ArrayList<Integer> levels = new ArrayList<>();
            ArrayList<String> lines = new ArrayList<>();
         for (int i = 0; i < rooms.size(); i++) {
             if (rooms.get(i).getName() != "Casting Office" && rooms.get(i).getName() != "Trailers") {
                 parts = xmlparser.retrieveActingSetParts(document, rooms.get(i).getName(), "name");
-                levels = xmlparser.retrieveActingSetParts(document, rooms.get(i).getName(), "level");
+                levels = xmlparser.retrieveActingSetPartsAsIntegers(document, rooms.get(i).getName(), "level");
                 lines = xmlparser.retrieveActingSetParts(document, rooms.get(i).getName(), "line");
                 ((ActingSet)rooms.get(i)).setRoles(parts, levels, lines);
             }
@@ -283,4 +283,34 @@ public class Moderator {
     public CastingOffice getCastingOffice() {
            return specialCastingOfficeRoom;
     }
+    
+    public void handleTakeRole(Player player, Role role) {
+
+        if (player.getRank() < role.getLevel()) {
+            throw new IllegalArgumentException("Player rank too low for this role");
+        }
+        
+        if (!role.getAvailable()) {
+            throw new IllegalStateException("Role is taken");
+        }
+        
+        player.setRole(role);
+        role.setAvailable(false);
+    }
+
+    public void handleRehearse(Player player) {
+        Role currentRole = player.getRole();
+        player.addRehearsalBonus(currentRole, 1);
+        
+        Room currentRoom = player.getRoom();
+        ActingSet actingSet = (ActingSet) currentRoom;
+        SceneCard sceneCard = actingSet.getSceneCard();
+        int budget = sceneCard.getBudget();
+        
+        if (player.getRank() + player.getRehearsalBonus(currentRole) >= budget) {
+            // player must act
+        }
+    }
+
+    
 }

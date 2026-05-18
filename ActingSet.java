@@ -53,12 +53,50 @@ public class ActingSet extends Room {
         return allRoles;
     }
 
+    public ArrayList<Role> getAllOpenRoles() throws IllegalStateException {
+        if (sceneCard == null) {
+            throw new IllegalStateException("No scene card on this acting set.");
+        }
+
+        ArrayList<Role> allRoles = new ArrayList<>(roles);
+        allRoles.addAll(sceneCard.getRoles());
+        allRoles.addAll(roles);
+        for(Role role : allRoles) {
+            if(!role.getAvailable()) {
+                allRoles.remove(role);
+            }
+        }
+
+        return allRoles;
+    }
+
+    // overload to filter by rank too
+    public ArrayList<Role> getAllOpenRoles(int rank) throws IllegalStateException {
+        if (sceneCard == null) {
+            throw new IllegalStateException("No scene card on this acting set.");
+        }
+
+        ArrayList<Role> allRoles = new ArrayList<>(roles);
+        allRoles.addAll(sceneCard.getRoles());
+        allRoles.addAll(roles);
+        for(Role role : allRoles) {
+            if(!role.getAvailable()) {
+                allRoles.remove(role);
+            }
+            if(role.getLevel() > rank) {
+                allRoles.remove(role); // rank filtration here
+            }
+        }
+
+        return allRoles;
+    }
+
     public void setTakes(ArrayList<String> takes) {
         this.takes = takes; // will likely need its own class later
         shotCounter = takes.size();
     }
 
-    public void setRoles(ArrayList<String> parts, ArrayList<String> levels, ArrayList<String> lines) {
+    public void setRoles(ArrayList<String> parts, ArrayList<Integer> levels, ArrayList<String> lines) {
         for (int i = 0; i < parts.size(); i++) {
             roles.add(new Role(parts.get(i), levels.get(i), lines.get(i), false));
         }
