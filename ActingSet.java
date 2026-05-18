@@ -72,23 +72,23 @@ public class ActingSet extends Room {
 
     // overload to filter by rank too
     public ArrayList<Role> getAllOpenRoles(int rank) throws IllegalStateException {
+
         if (sceneCard == null) {
-            throw new IllegalStateException("No scene card on this acting set.");
+            throw new IllegalStateException("no scene card");
         }
 
-        ArrayList<Role> allRoles = new ArrayList<>(roles);
-        allRoles.addAll(sceneCard.getRoles());
-        allRoles.addAll(roles);
-        for(Role role : allRoles) {
-            if(!role.getAvailable()) {
-                allRoles.remove(role);
-            }
-            if(role.getLevel() > rank) {
-                allRoles.remove(role); // rank filtration here
+        ArrayList<Role> openRoles = new ArrayList<>();
+
+        ArrayList<Role> combinedRoles = new ArrayList<>(roles);
+        combinedRoles.addAll(sceneCard.getRoles());
+
+        for (Role role : combinedRoles) {
+            if (role.getAvailable() && role.getLevel() <= rank) {
+                openRoles.add(role);
             }
         }
 
-        return allRoles;
+        return openRoles;
     }
 
     public void setTakes(ArrayList<String> takes) {
