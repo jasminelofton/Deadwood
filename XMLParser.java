@@ -310,7 +310,7 @@ public class XMLParser {
                 Element partElement = (Element) partNode;
                 
                 String name = partElement.getAttribute("name");
-                int level = Integer.getInteger(partElement.getAttribute("level"));
+                int level = Integer.parseInt(partElement.getAttribute("level"));
 
                 String line = parseLine(partElement);
 

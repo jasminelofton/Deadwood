@@ -130,6 +130,18 @@ public class Controller {
         }
     }
 
+    private void dealSceneCards() {
+        try {
+            moderator.getAndSetDeckFromXMLDoc();
+        }
+        catch (Exception e) {
+            view.printStatement("Error fetching cards cards");
+            System.exit(0);
+        }
+
+        moderator.dealSceneCards();
+    }
+
     private String otherPlayersInfo() {
         StringBuilder otherPlayersInfo = new StringBuilder("Other players info: ");
         ArrayList<Player> players = moderator.getPlayers();
@@ -425,6 +437,7 @@ public class Controller {
     public void startGame() {
         view.printStatement(introduction);
         roomSetUp();
+        dealSceneCards();
         handlePlayerCountInput();
 
         while (true) { //game
