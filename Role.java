@@ -8,12 +8,12 @@
 class Role {
 
     private String part;
-    private String level;
+    private int level;
     private String line;
     private Boolean available;
     private Boolean onCard;
 
-    public Role(String part, String level, String line, Boolean onCard) {
+    public Role(String part, int level, String line, Boolean onCard) {
         this.part = part;
         this.level = level;
         this.line = line;
@@ -29,7 +29,7 @@ class Role {
         return onCard;
     }
 
-    public String getLevel() {
+    public int getLevel() {
         return level;
     }
 
@@ -39,5 +39,9 @@ class Role {
 
     public Boolean getAvailable() {
         return available;
+    }
+
+    public void setAvailable(Boolean isAvail) {
+        available = isAvail;
     }
 }

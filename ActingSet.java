@@ -58,7 +58,7 @@ public class ActingSet extends Room {
         shotCounter = takes.size();
     }
 
-    public void setRoles(ArrayList<String> parts, ArrayList<String> levels, ArrayList<String> lines) {
+    public void setRoles(ArrayList<String> parts, ArrayList<Integer> levels, ArrayList<String> lines) {
         for (int i = 0; i < parts.size(); i++) {
             roles.add(new Role(parts.get(i), levels.get(i), lines.get(i), false));
         }

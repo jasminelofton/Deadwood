@@ -189,6 +189,37 @@ public class XMLParser {
         return partNames;
     }
 
+    public ArrayList<Integer> retrieveActingSetPartsAsIntegers(Document document, String locationName, String attr) throws Exception {
+        Node parts;
+        NodeList partsNodeList;
+        Node part;
+        String partName;
+        ArrayList<Integer> partLevels = new ArrayList<>();
+
+        parts = returnLocationNodeListShortCut(document, "set", locationName, "parts");
+        partsNodeList = parts.getChildNodes();
+
+        for (int i = 0; i < partsNodeList.getLength(); i++) {
+            part = partsNodeList.item(i);
+            
+            if (part.getNodeType() == Node.ELEMENT_NODE) { 
+                try {
+                    partName = part.getAttributes().getNamedItem(attr).getNodeValue();                    
+                } catch (Exception e) {
+                    partName = part.getTextContent();
+                }                  
+                
+                try {
+                    Integer level = Integer.valueOf(partName.trim());
+                    partLevels.add(level);
+                } catch (NumberFormatException e) {
+                    System.err.println("could not parse " + partName + " as an integer");
+                }
+            }
+        }
+        return partLevels;
+    }
+
     public ArrayList<String> retrieveCastingOfficeParts(Document document, String locationName, String attr) throws Exception {
         Node upgrades;
         NodeList upgradesNodeList;
@@ -279,7 +310,7 @@ public class XMLParser {
                 Element partElement = (Element) partNode;
                 
                 String name = partElement.getAttribute("name");
-                String level = partElement.getAttribute("level");
+                int level = Integer.getInteger(partElement.getAttribute("level"));
 
                 String line = parseLine(partElement);
 
