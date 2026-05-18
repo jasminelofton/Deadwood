@@ -29,6 +29,7 @@ public class Deck {
             return null;
         }
         SceneCard card = cards.get(currentIndex);
+        cards.remove(card);
         currentIndex++;
         return card;
     }
