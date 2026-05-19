@@ -394,6 +394,9 @@ public class Moderator {
 
     public void handleTakeRole(Player player, Role role) {
 
+        Room currentRoom = player.getRoom();
+        ActingSet actingSet = (ActingSet) currentRoom;
+
         if (player.getRank() < role.getLevel()) {
             throw new IllegalArgumentException("Player rank too low for this role");
         }
@@ -404,6 +407,12 @@ public class Moderator {
         
         player.setRole(role);
         role.setAvailable(false);
+
+        if (role.isOnCard()) {
+            actingSet.addOnCardplayer(player);
+        } else {
+            actingSet.addOffCardplayer(player);
+        }
     }
 
     public void handleRehearse(Player player) {

@@ -7,6 +7,8 @@ public class ActingSet extends Room {
     private SceneCard sceneCard;
     private ArrayList<Role> roles;    
     private ArrayList <String> takes; // May convert to Integer later if needed.
+    private ArrayList<Player> onCardPlayers;
+    private ArrayList<Player> offCardPlayers;
 
     public ActingSet(String name) {
         super(name);
@@ -28,15 +30,27 @@ public class ActingSet extends Room {
         return sceneCard;
     }
 
-    // TODO
     public ArrayList<Player> getOnCardPlayers() {
+        return onCardPlayers;
+    }
 
+    public void addOnCardplayer(Player p) {
+        onCardPlayers.add(p);
     }
     
-    // TODO
     public ArrayList<Player> getOffCardPlayers() {
-
+        return offCardPlayers;
     }
+
+    public void addOffCardplayer(Player p) {
+        offCardPlayers.add(p);
+    }
+
+    public void clearPlayers() {
+        offCardPlayers.clear();
+        onCardPlayers.clear();
+    }
+
 
     public void setSceneCard(SceneCard sceneCard) {
         this.sceneCard = sceneCard;
