@@ -28,7 +28,7 @@ public class Player {
     }
 
     public int getRehearsalBonus(Role role) {
-        return (int) rehearsalBonuses.get(role);
+        return rehearsalBonuses.getOrDefault(role, 0);
     }
 
     public void setRank(int rank) {

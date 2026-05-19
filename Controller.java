@@ -360,7 +360,7 @@ public class Controller {
         try {
             moderator.handleRehearse(currentPlayer);
 
-            view.printStatement(ANSI_GREEN + "you rehearsed, add a practice chip."); 
+            view.printStatement(ANSI_GREEN + "you rehearsed, add a practice chip." + ANSI_RESET + "\n"); 
 
         } catch (Exception e) {
             view.printStatement(ANSI_RED + "error while rehearsing:  " + e.getMessage() + ANSI_RESET + "\n");

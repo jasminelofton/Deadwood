@@ -14,6 +14,8 @@ public class ActingSet extends Room {
         super(name);
         roles = new ArrayList<>();
         takes = new ArrayList<>();
+        onCardPlayers = new ArrayList<>();
+        offCardPlayers = new ArrayList<>();
         sceneCard = null;
     }
 
