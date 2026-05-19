@@ -265,6 +265,7 @@ public class Moderator {
     public int getCurrentPlayerNum() {
         return currentPlayer;
     }
+
     private void wrapScene(ActingSet set) {
         SceneCard sceneCard = set.getSceneCard();
         int budget = sceneCard.getBudget();
@@ -296,14 +297,36 @@ public class Moderator {
             player.setRole(null);
         }
         
+        set.clearPlayers();
+        
         // check if last day
         checkEndOfDay();
     }
 
-    // TODO
     // helpers for wrap scene 
     private void distributeOnCardBonuses(ArrayList<Role> roles, ArrayList<Player> players, int[] bonusDice) {
 
+        for (int i = 0; i < bonusDice.length; i++) {
+            int roleIndex = i % roles.size();
+            Role role = roles.get(roleIndex);
+            
+            // find player working on role
+            Player player = findPlayer(players, role); 
+
+            if (player != null) {
+                player.addDollars(bonusDice[i]);
+            }
+        }
+    }
+
+    private Player findPlayer(ArrayList<Player> players, Role role) {
+        for (Player player : players) {
+            if (player.getRole().equals(role)) {
+                return player;
+            }
+        }
+
+        return null;
     }
 
     private void payOffCardBonuses(ArrayList<Player> players) {
