@@ -21,15 +21,18 @@ public class Moderator {
 
     private int currentPlayer = 0;
     private int daysLeft;
-
-    // This subtracts the day
-    public void endDay() {
-        daysLeft--;
-    }
+    private int cardsLeft;
 
     //return daysLeft
     public int daysLeft() {
         return daysLeft;
+    }
+
+    public int getCards() {
+        return cardsLeft;
+    }
+    public void finishCard() {
+        cardsLeft--;
     }
 
     // increases int by 1 or recycles back to 0;
@@ -237,6 +240,7 @@ public class Moderator {
     }
 
     public void dealSceneCards() {
+        cardsLeft = 10;
         deck.shuffle();
 
         for (Room room : rooms) {
@@ -274,6 +278,8 @@ public class Moderator {
         ArrayList<Player> onCardPlayers = set.getOnCardPlayers();
         ArrayList<Player> offCardPlayers = set.getOffCardPlayers();
         
+        cardsLeft--;
+        
         // only pay if at least one on card actor exists
         if (!onCardPlayers.isEmpty()) {
 
@@ -297,7 +303,8 @@ public class Moderator {
         }
         
         // check if last day
-        checkEndOfDay();
+        // will do this in the controller start method loop
+       // checkEndOfDay();
     }
 
     // TODO
@@ -310,10 +317,26 @@ public class Moderator {
 
     }
 
-    private void checkEndOfDay() {
+    public boolean checkEndOfDay() {
+        // day ends when 1 card is running.
+        if (cardsLeft == 1) {
+            Player player;
+            // return to trailers
+            for (int i = 0; i < players.size(); i++) {
 
+                player = players.get(i);
+
+                player.setRoom(specialTrailerRoom);
+
+                player.setRole(null);
+    
+            }
+
+            daysLeft--;
+            return true;
+        }
+        return false;
     }
-
 
     public void handleAct(Player player) {
 
