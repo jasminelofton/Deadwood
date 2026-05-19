@@ -8,24 +8,31 @@ import java.util.*;
 // and player data and/or executing the actions of the entire game.
 public class Moderator {
     private final static int MAXPLAYERS = 8;
-    private int daysLeft;
+
     private String XMLBoardFile = "board.xml";
     private String XMLCardFile = "cards.xml";
+
     private ArrayList<Player> players = new ArrayList<Player>();
     private ArrayList<Room> rooms = new ArrayList<Room>();
     private Deck deck = new Deck();
+
     private Trailer specialTrailerRoom;
     private CastingOffice specialCastingOfficeRoom;
-    private int currentPlayer = 0;
 
+    private int currentPlayer = 0;
+    private int daysLeft;
+
+    // This subtracts the day
     public void endDay() {
         daysLeft--;
     }
 
+    //return daysLeft
     public int daysLeft() {
         return daysLeft;
     }
 
+    // increases int by 1 or recycles back to 0;
     public void endTurn () {
         currentPlayer = (currentPlayer + 1) % players.size();
     }
@@ -37,12 +44,15 @@ public class Moderator {
     // adjustments will be made to the ranks, credits, and days
     // partaining to the game which the logic will all account for.
     public void setUpPlayerRules (int playerCount) {
+
         //check if the playerCount falls within the given limit for the game.
         validatePlayerCount(playerCount);
+
         //create all objects for the number of players.
         for (int i = 0; i < playerCount; i++) {
             players.add(new Player(specialTrailerRoom));
         }
+
         //set the data of all these players.
         calcAndSetPlayerStartRanks(playerCount);
         calcAndSetPlayerStartCredits(playerCount);
@@ -114,15 +124,18 @@ public class Moderator {
     // The XML file is parsed in XMLParser.java. This method will
     // completely set all the rooms using helper functions.
     public void getAndSetRoomsFromXMLDoc() throws Exception{
+
+        // create xml objects.
         XMLParser xmlparser = new XMLParser();
         Document document = xmlparser.newBoardDoc(XMLBoardFile);
 
+        // create and set values for rooms.
         createRooms(xmlparser, document);
         setRoomsNeighbors(xmlparser, document);
         setActingSetTakes(xmlparser, document);
         setActingSetParts(xmlparser, document);
 
-        // setCastingOfficeUpgrade(xmlparser, document);
+        setCastingOfficeUpgrade(xmlparser, document);
     }
 
     // Helper function to getAndSetRoomsFromXMLDoc.
@@ -152,6 +165,7 @@ public class Moderator {
         }
     }
 
+    // sets all neighbors for room.
     private void setRoomsNeighbors(XMLParser xmlparser, Document document) throws Exception {
         ArrayList<String> neighbors = new ArrayList<>();
         for (int i = 0; i < rooms.size(); i++) {
@@ -169,6 +183,7 @@ public class Moderator {
         }
     }
 
+    // sets all the takes for an acting set.
     private void setActingSetTakes(XMLParser xmlparser, Document document) throws Exception {
          ArrayList<String> takes = new ArrayList<>();
         for (int i = 0; i < rooms.size(); i++) {
@@ -212,6 +227,7 @@ public class Moderator {
 
     }
 
+    
     public void getAndSetDeckFromXMLDoc() throws Exception {
         XMLParser xmlParser = new XMLParser();
         Document document = xmlParser.newCardsDoc(XMLCardFile);
@@ -230,22 +246,25 @@ public class Moderator {
         }
     }
 
+    // return rooms.
     public ArrayList<Room> getRooms() {
         return rooms;
     }
 
+    // return players 
     public ArrayList<Player> getPlayers() {
         return players;
     }
     
+    // return current player object
     public Player getCurrentPlayer() {
         return players.get(currentPlayer);
     }
 
+    // return current player number
     public int getCurrentPlayerNum() {
         return currentPlayer;
     }
-
     private void wrapScene(ActingSet set) {
 
     }

@@ -227,7 +227,7 @@ public class XMLParser {
         String upgradeValue;
         ArrayList<String> upgradeValues = new ArrayList<>();
 
-        upgrades = returnLocationNodeListShortCut(document, "office", locationName, "upgrades");
+        upgrades = returnLocationNodeListShortCut(document, "office", null, "upgrades");
         upgradesNodeList = upgrades.getChildNodes();
 
         for (int i = 0; i < upgradesNodeList.getLength(); i++) {
