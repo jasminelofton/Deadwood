@@ -1,9 +1,5 @@
 // for the future interface
 public class Take {
-    int xCordinate;
-    int yCordinate;
-    int height;
-    int width;
     boolean isShotCounter;
 
     public Take() {

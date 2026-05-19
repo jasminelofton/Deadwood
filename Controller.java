@@ -234,14 +234,14 @@ public class Controller {
             return false;
         }
 
-        // prints all rooms to view
-        for (int i = 0; i < rooms.size(); i++) {
-            view.printStatement("[" + i + "] " + rooms.get(i).getName() + "\n");
-        }
-
         // continually ask for input until user picks a valid number.
         while (true) {
-            
+
+            // prints all rooms to view
+            for (int i = 0; i < rooms.size(); i++) {
+                view.printStatement("[" + i + "] " + rooms.get(i).getName() + "\n");
+            }      
+
             view.printStatement("Player " + (moderator.getCurrentPlayerNum()+1) + " can move to: " + currentPlayer.getRoom().getNeighbors().toString());
             view.printStatement("Pick a room:"); 
 
