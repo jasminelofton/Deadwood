@@ -331,6 +331,11 @@ public class Moderator {
 
     private void payOffCardBonuses(ArrayList<Player> players) {
 
+        for (Player player : players) {
+            Role role = player.getRole();
+            int bonus = role.getLevel();
+            player.addDollars(bonus);
+        }
     }
 
     private void checkEndOfDay() {
