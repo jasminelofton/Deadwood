@@ -319,17 +319,18 @@ public class Moderator {
     }
 
     public void handleRehearse(Player player) {
+
         Role currentRole = player.getRole();
-        player.addRehearsalBonus(currentRole, 1);
-        
         Room currentRoom = player.getRoom();
         ActingSet actingSet = (ActingSet) currentRoom;
         SceneCard sceneCard = actingSet.getSceneCard();
         int budget = sceneCard.getBudget();
-        
+
         if (player.getRank() + player.getRehearsalBonus(currentRole) >= budget) {
-            // player must act
+            throw new IllegalStateException("You have guaranteed success, you must now act");
         }
+
+        player.addRehearsalBonus(currentRole, 1);
     }
 
     
