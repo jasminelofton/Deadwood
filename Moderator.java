@@ -247,8 +247,54 @@ public class Moderator {
     }
 
     private void wrapScene(ActingSet set) {
+        SceneCard sceneCard = set.getSceneCard();
+        int budget = sceneCard.getBudget();
+
+        Dice dice = new Dice();
+        
+        ArrayList<Player> onCardPlayers = set.getOnCardPlayers();
+        ArrayList<Player> offCardPlayers = set.getOffCardPlayers();
+        
+        // only pay if at least one on card actor exists
+        if (!onCardPlayers.isEmpty()) {
+
+            int[] bonusDice = dice.rollForBonus(budget);
+
+            ArrayList<Role> onCardRoles = sceneCard.getRoles();
+            distributeOnCardBonuses(onCardRoles, onCardPlayers, bonusDice);
+            
+            payOffCardBonuses(offCardPlayers);
+        }
+        
+        set.removeSceneCard();
+        
+        for (Player player : onCardPlayers) {
+            player.clearRehearsalBonus(player.getRole());;
+            player.setRole(null);
+        }
+        for (Player player : offCardPlayers) {
+            player.clearRehearsalBonus(player.getRole());;
+            player.setRole(null);
+        }
+        
+        // check if last day
+        checkEndOfDay();
+    }
+
+    // TODO
+    // helpers for wrap scene 
+    private void distributeOnCardBonuses(ArrayList<Role> roles, ArrayList<Player> players, int[] bonusDice) {
 
     }
+
+    private void payOffCardBonuses(ArrayList<Player> players) {
+
+    }
+
+    private void checkEndOfDay() {
+
+    }
+
 
     public void handleAct(Player player) {
 

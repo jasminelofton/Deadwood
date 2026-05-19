@@ -29,6 +29,16 @@ public class ActingSet extends Room {
         return sceneCard;
     }
 
+    // TODO
+    public ArrayList<Player> getOnCardPlayers() {
+
+    }
+    
+    // TODO
+    public ArrayList<Player> getOffCardPlayers() {
+
+    }
+
     public void setSceneCard(SceneCard sceneCard) {
         this.sceneCard = sceneCard;
     }
