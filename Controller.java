@@ -454,8 +454,16 @@ public class Controller {
             while (true) { //day
                     view.printStatement("Player " + (moderator.getCurrentPlayerNum()+1) + "'s turn.\n");
                     handlePlayerTurnInput();
+                    if (moderator.checkEndOfDay() == true) {
+                        break;
+                    }
+            }
+            if (moderator.daysLeft() == 0) {
+                break;
             }
         }
+
+        //calculate money
     }
 
 }
