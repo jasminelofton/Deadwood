@@ -350,6 +350,8 @@ public class Moderator {
         if (cardsLeft == 1) {
             Player player;
             // return to trailers
+            // reset role
+            // reset shot counter
             for (int i = 0; i < players.size(); i++) {
 
                 player = players.get(i);
@@ -357,7 +359,12 @@ public class Moderator {
                 player.setRoom(specialTrailerRoom);
 
                 player.setRole(null);
-    
+            }
+
+            for (int i = 0; i < rooms.size(); i++) {
+                if (rooms.get(i) instanceof ActingSet) {
+                    ((ActingSet)rooms.get(i)).resetShotCounter();
+                }
             }
 
             daysLeft--;
@@ -457,6 +464,23 @@ public class Moderator {
 
         player.addRehearsalBonus(currentRole, 1);
     }
+
+    public int calculateWinner () {
+        int winner = 0;
+        int winnerScore = 0;
+        int currScore;
+        for (int i = 0; i < players.size(); i++) {
+            currScore = players.get(i).getDollars() + players.get(i).getCredits();
+            if (currScore > winnerScore) {
+                winner = i;
+                winnerScore = currScore;
+            }
+        }
+        // player 1-8
+        return winner + 1;
+    }
+
+
 
     
 }

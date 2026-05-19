@@ -66,6 +66,10 @@ public class ActingSet extends Room {
         shotCounter--;
     }
 
+    public void resetShotCounter() {
+        shotCounter = takes.size();
+    }
+
     // should return roles from both the set and the scene card.
     public ArrayList<Role> getAllRoles() throws IllegalStateException {
         if (sceneCard == null) {

@@ -455,15 +455,15 @@ public class Controller {
                     view.printStatement("Player " + (moderator.getCurrentPlayerNum()+1) + "'s turn.\n");
                     handlePlayerTurnInput();
                     if (moderator.checkEndOfDay() == true) {
+                        view.printStatement("The day has ended. Players back to trailers.");
                         break;
                     }
             }
             if (moderator.daysLeft() == 0) {
+                view.printStatement("The game has ended. No days left.");
                 break;
             }
         }
-
-        //calculate money
+        view.printStatement("Player " + moderator.calculateWinner() + " wins!");
     }
-
 }
