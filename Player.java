@@ -10,6 +10,7 @@ public class Player {
     private int rank;
     private Room room;
     private Role role;
+    private String color;
     // Maps each role to the number of rehearsal chips earned for that role.
     // Chips are cleared when the scene wraps or the player stops working the role.
     private Map<Role, Integer> rehearsalBonuses = new HashMap<>();
@@ -19,6 +20,7 @@ public class Player {
         room = trailer;
         dollars = 0;
         role = null;
+        color = null;
     }
 
     // Adds n rehearsal chips to the given role, creating the entry if it doesn't exist yet.
@@ -58,6 +60,14 @@ public class Player {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     // Returns true if the player is currently assigned to a role on an acting set.

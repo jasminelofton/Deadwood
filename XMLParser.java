@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -96,6 +98,36 @@ public class XMLParser {
             }
         }
         return locationNames;
+    }
+
+    public Area retrieveRoomArea(Document document, String locationName) throws Exception {
+        Node areaNode;
+        
+        switch(locationName) {
+            case "Casting Office":
+            case "office":
+                areaNode = returnLocationNodeListShortCut(document, "office", null, "area");
+                break;
+            case "Trailers":
+            case "trailer":
+                areaNode = returnLocationNodeListShortCut(document, "trailer", null, "area");
+                break;
+            default:
+                areaNode = returnLocationNodeListShortCut(document, "set", locationName, "area");
+                break;
+        }
+        
+        if (areaNode != null && areaNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element areaElement = (Element) areaNode;
+            int x = Integer.parseInt(areaElement.getAttribute("x"));
+            int y = Integer.parseInt(areaElement.getAttribute("y"));
+            int h = Integer.parseInt(areaElement.getAttribute("h"));
+            int w = Integer.parseInt(areaElement.getAttribute("w"));
+            
+            return new Area(x, y, h, w);
+        }
+        
+        return null;
     }
 
     public ArrayList<String> retrieveNeighborsNames(Document document, String locationName) throws Exception {

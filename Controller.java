@@ -439,6 +439,29 @@ public class Controller {
         view.bMove.addMouseListener(new boardMouseListener());
         view.bRehearse.addMouseListener(new boardMouseListener());
 
+        String[] colors = {"b", "c", "g", "o", "p", "r", "v", "w", "y"};
+    
+        ArrayList<Player> players = moderator.getPlayers();
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
+            
+            p.setColor(colors[i]); 
+            
+            int startX = p.getRoom().getX() + (i * 15); 
+            int startY = p.getRoom().getY();
+
+            
+            System.out.println(startX);
+            System.out.println(startY);
+
+            if (startY == 248) {
+                startY = 350; // Forces them down out from under the menu labels
+            }
+            String dieAssetFile = p.getColor() + p.getRank() + ".png"; 
+            
+            view.addPlayerToken(i, dieAssetFile, startX, startY);
+        }
+
         view.updatePlayerInfo(playerInfo() + otherPlayersInfo());
 
 

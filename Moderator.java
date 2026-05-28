@@ -14,6 +14,7 @@ public class Moderator {
 
     private ArrayList<Player> players = new ArrayList<Player>();
     private ArrayList<Room> rooms = new ArrayList<Room>();
+
     private Deck deck = new Deck();
 
     private Trailer specialTrailerRoom;
@@ -164,6 +165,14 @@ public class Moderator {
                 default:
                     rooms.add(new ActingSet(name));
                     break;
+            }
+
+            // set the area for each room
+            try {
+                Area roomArea = xmlparser.retrieveRoomArea(document, name);
+                rooms.get(i).setArea(roomArea);
+            } catch (Exception e) {
+                System.err.println("Could not parse coordinates for room" + name);
             }
         }
     }

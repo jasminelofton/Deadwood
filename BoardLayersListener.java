@@ -11,8 +11,13 @@ import java.awt.*;
 import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.awt.event.*;
+import java.util.HashMap;
 
 public class BoardLayersListener extends JFrame {
+
+    private HashMap<Integer, JLabel> playerLabelsMap = new HashMap<>();
+    
+    private HashMap<String, JLabel> sceneCardLabelsMap = new HashMap<>();
 
   // JLabels
   JLabel boardlabel;
@@ -53,7 +58,7 @@ public class BoardLayersListener extends JFrame {
        boardlabel.setBounds(0,0,icon.getIconWidth(),icon.getIconHeight());
       
        // Add the board to the lowest layer
-       bPane.add(boardlabel, new Integer(0));
+       bPane.add(boardlabel, Integer.valueOf(0));
       
        // Set the size of the GUI (extra 120px height for player info bar below board)
        setSize(icon.getIconWidth()+200,icon.getIconHeight()+120);
@@ -62,35 +67,35 @@ public class BoardLayersListener extends JFrame {
        playerInfoLabel = new JLabel("Player info will appear here.");
        playerInfoLabel.setBounds(0, icon.getIconHeight(), icon.getIconWidth(), 120);
        playerInfoLabel.setVerticalAlignment(JLabel.TOP);
-       bPane.add(playerInfoLabel, new Integer(2));
+       bPane.add(playerInfoLabel, Integer.valueOf(2));
        
        // Add a scene card to this room
-       cardlabel = new JLabel();
-       ImageIcon cIcon =  new ImageIcon("01.png");
-       cardlabel.setIcon(cIcon); 
-       cardlabel.setBounds(20,65,cIcon.getIconWidth()+2,cIcon.getIconHeight());
-       cardlabel.setOpaque(true);
+      //  cardlabel = new JLabel();
+      //  ImageIcon cIcon =  new ImageIcon("01.png");
+      //  cardlabel.setIcon(cIcon); 
+      //  cardlabel.setBounds(20,65,cIcon.getIconWidth()+2,cIcon.getIconHeight());
+      //  cardlabel.setOpaque(true);
       
        // Add the card to the lower layer
-       bPane.add(cardlabel, new Integer(1));
+      //  bPane.add(cardlabel, Integer.valueOf(1));
        
       
 
     
        // Add a dice to represent a player. 
        // Role for Crusty the prospector. The x and y co-ordiantes are taken from Board.xml file
-       playerlabel = new JLabel();
-       ImageIcon pIcon = new ImageIcon("r2.png");
-       playerlabel.setIcon(pIcon);
-       //playerlabel.setBounds(114,227,pIcon.getIconWidth(),pIcon.getIconHeight());  
-       playerlabel.setBounds(114,227,46,46);
-       playerlabel.setVisible(true);
-       bPane.add(playerlabel,new Integer(3));
+      //  playerlabel = new JLabel();
+      //  ImageIcon pIcon = new ImageIcon("r2.png");
+      //  playerlabel.setIcon(pIcon);
+      //  //playerlabel.setBounds(114,227,pIcon.getIconWidth(),pIcon.getIconHeight());  
+      //  playerlabel.setBounds(114,227,46,46);
+      //  playerlabel.setVisible(true);
+      //  bPane.add(playerlabel, Integer.valueOf(3));
       
        // Create the Menu for action buttons
        mLabel = new JLabel("MENU");
        mLabel.setBounds(icon.getIconWidth()+40,0,100,20);
-       bPane.add(mLabel,new Integer(2));
+       bPane.add(mLabel,Integer.valueOf(2));
 
        // Create Action buttons
        bAct = new JButton("ACT");
@@ -109,11 +114,13 @@ public class BoardLayersListener extends JFrame {
        bMove.addMouseListener(new boardMouseListener());
 
        // Place the action buttons in the top layer
-       bPane.add(bAct, new Integer(2));
-       bPane.add(bRehearse, new Integer(2));
-       bPane.add(bMove, new Integer(2));
+       bPane.add(bAct, Integer.valueOf(2));
+       bPane.add(bRehearse, Integer.valueOf(2));
+       bPane.add(bMove, Integer.valueOf(2));
 
   }
+
+  
   
   // This class implements Mouse Events
   class boardMouseListener implements MouseListener{
@@ -167,5 +174,31 @@ public class BoardLayersListener extends JFrame {
       return JOptionPane.showInputDialog(this, prompt);
    }
 
+   public void addPlayerToken(int playerID, String dieImageFilename, int x, int y) {
+
+      JLabel pLabel = new JLabel();
+      ImageIcon pIcon = new ImageIcon(dieImageFilename);
+      pLabel.setIcon(pIcon);
+      pLabel.setBounds(x, y, 46, 46);
+      pLabel.setVisible(true);
+      
+      playerLabelsMap.put(playerID, pLabel);
+      
+      bPane.add(pLabel, Integer.valueOf(3));
+
+      bPane.revalidate();
+      
+      bPane.repaint();
+   }
+
+   public void movePlayerToken(int playerID, int x, int y) {
+      JLabel pLabel = playerLabelsMap.get(playerID);
+      
+      if (pLabel != null) {
+
+         pLabel.setBounds(x, y, 46, 46);
+         bPane.repaint();
+      }
+   }
 }
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 // Each room has a name and a list of neighboring room names that players can move to.
 public class Room {
     String name;
+    Area area;
     ArrayList<String> neighbors;  // names of rooms directly reachable from this one
 
     // No-arg constructor required for subclass instantiation patterns.
@@ -15,8 +16,20 @@ public class Room {
         neighbors = new ArrayList<>();
     }
 
+    public void setArea(Area area) {
+        this.area = area;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public int getX() {
+        return area.getX();
+    }
+
+    public int getY() {
+        return area.getY();
     }
 
     // Replaces the full neighbor list (populated from board.xml during setup).
