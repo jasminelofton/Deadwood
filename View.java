@@ -1,11 +1,16 @@
 import java.util.*;
-// Program does not end until view ends program.
+
+// View is the presentation layer of the MVC pattern.
+// All output to the player goes through this class and all raw input is read here.
+// The program runs until the user quits via the Controller — View itself never exits.
 public class View {
     Scanner scan = new Scanner(System.in);
     private final String chooseChoice = "choose a number";
 
-    // The welcome message to enter the casting office.
-    public void CastingOffice_WelcomeMessage(List<Integer> rank, List<Integer> dollars, 
+    // Displays the Casting Office upgrade menu showing available ranks and their costs,
+    // as well as the player's current dollar and credit balances.
+    // Prints an error and returns early if the pricing lists have mismatched sizes.
+    public void CastingOffice_WelcomeMessage(List<Integer> rank, List<Integer> dollars,
         List<Integer> credits, int playerDollars, int playerCredits) {
 
         String welcomeMessage;
@@ -25,9 +30,10 @@ public class View {
             [ ] Rank | Dollars | Credits\n
             """);
 
-        if (dollars.size() != credits.size() && credits.size() != rank.size()) {
+        // Guard against mismatched pricing data before attempting to print the table.
+        if (dollars.size() != credits.size() || credits.size() != rank.size()) {
             System.out.println(
-                "Dollars contains " + dollars.size() + "elements but credits contains " + 
+                "Dollars contains " + dollars.size() + "elements but credits contains " +
                 credits.size() + " elements and rank contains " + rank.size() + " elements");
             return;
         }
@@ -35,36 +41,36 @@ public class View {
         System.out.println(welcomeMessage);
 
         for (int i = 0; i < dollars.size(); i++) {
-            pricing.append(String.format("[%d] %2d %8d %8d\n", i, rank.get(i), dollars.get(i), 
+            pricing.append(String.format("[%d] %2d %8d %8d\n", i, rank.get(i), dollars.get(i),
             credits.get(i)));
         }
         pricing.append("[5] leave Casting Office desk.\n");
 
         System.out.println(pricing);
-
         System.out.println(chooseChoice);
     }
 
+    // Prompts the player to choose between paying in dollars or credits.
     public void CastingOffice_DollarsOrCredits() {
         System.out.println("In Dollars Or Credits?\n[d]\n[c]");
     }
 
-    // Whether their upgraded choice could be processed based on their credits or dollars.
+    // Confirms that the rank upgrade was successfully processed.
     public void CastingOffice_Choice(int rank) {
-            System.out.println("Congratulations. Rank upgraded to " + rank + ".");
-            return;
+        System.out.println("Congratulations. Rank upgraded to " + rank + ".");
     }
 
-    // The player is leaving the casting office terminal.
+    // Displays a message when the player leaves the Casting Office upgrade menu.
     public void CastingOffice_Leaving() {
         System.out.println("Leaving the Casting Office front desk.");
     }
 
-
-    public void printStatement (String statement) {
+    // Prints any general statement to the console.
+    public void printStatement(String statement) {
         System.out.println(statement);
     }
 
+    // Reads and returns the next line of text entered by the player.
     public String AskForStatement() {
         return scan.nextLine();
     }

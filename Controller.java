@@ -130,6 +130,8 @@ public class Controller {
         }
     }
 
+    // Loads cards.xml into the deck and then deals one card to every ActingSet.
+    // Exits the program if the card file cannot be parsed.
     private void dealSceneCards() {
         try {
             moderator.getAndSetDeckFromXMLDoc();
@@ -142,6 +144,8 @@ public class Controller {
         moderator.dealSceneCards();
     }
 
+    // Builds a summary string of every player's location except the current player's.
+    // Used to display opponent positions at the start of each turn.
     private String otherPlayersInfo() {
         StringBuilder otherPlayersInfo = new StringBuilder("Other players info: ");
         ArrayList<Player> players = moderator.getPlayers();
@@ -150,15 +154,15 @@ public class Controller {
         for (int i = 0; i < players.size(); i++) {
             if (i != currentPlayerNum) {
                 Player player = players.get(i);
-                otherPlayersInfo.append("[Player " + (i+1)  + "'s Location: " + player.getRoom().getName() + "] ");
-
+                otherPlayersInfo.append("[Player " + (i+1) + "'s Location: " + player.getRoom().getName() + "] ");
             }
         }
         otherPlayersInfo.append("\n");
         return otherPlayersInfo.toString();
     }
 
-    private String playerInfo () {
+    // Builds a one-line status string for the current player (rank, dollars, credits, location, role status).
+    private String playerInfo() {
         Player currentPlayer = moderator.getCurrentPlayer();
 
         return "Player " + (moderator.getCurrentPlayerNum()+1) + " info: [" +
@@ -168,58 +172,74 @@ public class Controller {
                 "Location: " + currentPlayer.getRoom().getName() + ", " +
                 "Working: " + currentPlayer.hasRole() + "]\n";
     }
+
+    // Runs the interactive menu loop for one player's turn.
+    // Each turn allows exactly one "first step" action (move, act, or rehearse),
+    // plus any number of optional actions (take role, upgrade) before ending the turn.
+    // The loop exits when the player chooses 'e' (end turn) or 'q' (quit).
     private void handlePlayerTurnInput() {
         String input;
         boolean completedFirstStepAction = false;
-        
+
         while (true) {
             view.printStatement(playerInfo());
             view.printStatement(otherPlayersInfo());
             view.printStatement(menuList);
-            input = view.AskForStatement();            
-            
-            switch(input) {
-                    case "m":
-                        // move
-                        if (completedFirstStepAction) {
-                            view.printStatement(ANSI_RED + "You already moved/acted/rehearsed" + ANSI_RESET + "\n");
-                             break;
-                        }
-                        if (handleMove()) {
-                            completedFirstStepAction = true;
-                        }
-                        break;
-                    case "a":
-                        handleAct();
-                        break;
-                    case "t":
+            input = view.AskForStatement();
 
-                        handleTakeRole();
+            switch (input) {
+                case "m":
+                    if (completedFirstStepAction) {
+                        view.printStatement(ANSI_RED + "You already moved/acted/rehearsed" + ANSI_RESET + "\n");
                         break;
-                    case "r":
-
-                        handleRehearse();
+                    }
+                    if (handleMove()) {
+                        completedFirstStepAction = true;
+                    }
+                    break;
+                case "a":
+                    if (completedFirstStepAction) {
+                        view.printStatement(ANSI_RED + "You already moved/acted/rehearsed" + ANSI_RESET + "\n");
                         break;
-                    case "u":
-                        // upgrade, (opt) second step action
-                        handleUpgrade();
+                    }
+                    if (handleAct()) {
+                        completedFirstStepAction = true;
+                    }
+                    break;
+                case "t":
+                    // Taking a role is allowed at any point during a turn (not a first-step action).
+                    handleTakeRole();
+                    break;
+                case "r":
+                    if (completedFirstStepAction) {
+                        view.printStatement(ANSI_RED + "You already moved/acted/rehearsed" + ANSI_RESET + "\n");
                         break;
-                    case "e":
-                        // end turn, (opt)second step action
-                        moderator.endTurn();
-                        return;
-                    case "q":
-                        // quit game, (opt) second step action
-                        System.exit(0);
-                    default:
-                        view.printStatement(ANSI_RED + "Invalid input, please try again." + ANSI_RESET + "\n");
-                        handlePlayerTurnInput();
+                    }
+                    if (handleRehearse()) {
+                        completedFirstStepAction = true;
+                    }
+                    break;
+                case "u":
+                    // Upgrading is an optional action and does not count as the first-step action.
+                    handleUpgrade();
+                    break;
+                case "e":
+                    // End turn — advance to the next player.
+                    moderator.endTurn();
+                    return;
+                case "q":
+                    System.exit(0);
+                default:
+                    view.printStatement(ANSI_RED + "Invalid input, please try again." + ANSI_RESET + "\n");
+                    handlePlayerTurnInput();
             }
         }
     }
 
+    // Prompts the current player to pick a neighboring room to move to.
+    // Blocks movement if the player is currently working a role.
+    // Loops until a valid room index is entered; returns true on a successful move.
     private boolean handleMove() {
-        // move
         ArrayList<Room> rooms;
         Player currentPlayer;
         String inputString;
@@ -228,216 +248,207 @@ public class Controller {
         rooms = moderator.getRooms();
         currentPlayer = moderator.getCurrentPlayer();
 
-        // Player mustn't be working on a set to move.
         if (currentPlayer.hasRole()) {
             view.printStatement(ANSI_RED + "You cannot move while working on a role." + ANSI_RESET + "\n");
             return false;
         }
 
-        // continually ask for input until user picks a valid number.
         while (true) {
-
-            // prints all rooms to view
+            // Print the full room list with indices so the player can pick by number.
             for (int i = 0; i < rooms.size(); i++) {
                 view.printStatement("[" + i + "] " + rooms.get(i).getName() + "\n");
-            }      
+            }
 
             view.printStatement("Player " + (moderator.getCurrentPlayerNum()+1) + " can move to: " + currentPlayer.getRoom().getNeighbors().toString());
-            view.printStatement("Pick a room:"); 
+            view.printStatement("Pick a room:");
 
             inputString = view.AskForStatement();
 
             try {
                 inputInt = Integer.parseInt(inputString);
 
-                if (inputInt < 0 || inputInt >= rooms.size()) throw new NumberFormatException(ANSI_RED + "wrong number" + ANSI_RESET + "\n");
+                if (inputInt < 0 || inputInt >= rooms.size())
+                    throw new NumberFormatException(ANSI_RED + "wrong number" + ANSI_RESET + "\n");
 
-                // Checks if room is a neighbor of the players current location.
-                boolean isRoomANeighbor =currentPlayer.getRoom().getNeighbors().contains(rooms.get(inputInt).getName());
+                // Validate that the chosen room is actually adjacent to the player's current room.
+                boolean isRoomANeighbor = currentPlayer.getRoom().getNeighbors().contains(rooms.get(inputInt).getName());
 
-                if (!isRoomANeighbor) throw new IllegalArgumentException(ANSI_RED + "not a neighbor" + ANSI_RESET + "\n");
-                    currentPlayer.setRoom(rooms.get(inputInt));
-                    view.printStatement((ANSI_GREEN +"moved to " + rooms.get(inputInt).getName()) + ANSI_RESET + "\n");    
-                    if(rooms.get(inputInt) instanceof ActingSet set) {
-                        view.printStatement("Scene Info " + set.getSceneCard().toString());
-                    }
-                    break;            
-            } 
+                if (!isRoomANeighbor)
+                    throw new IllegalArgumentException(ANSI_RED + "not a neighbor" + ANSI_RESET + "\n");
 
+                currentPlayer.setRoom(rooms.get(inputInt));
+                view.printStatement((ANSI_GREEN + "moved to " + rooms.get(inputInt).getName()) + ANSI_RESET + "\n");
+                if (rooms.get(inputInt) instanceof ActingSet set) {
+                    view.printStatement("Scene Info " + set.getSceneCard().toString());
+                }
+                break;
+            }
             catch (NumberFormatException e) {
                 view.printStatement(e.getMessage());
             }
-
             catch (IllegalArgumentException e) {
                 view.printStatement(e.getMessage());
             }
         }
-        //successful move
         return true;
     }
 
-    private void handleAct() {
+    // Delegates an act attempt to the moderator.
+    // Returns false (without consuming the first-step action) if the player has no role.
+    private boolean handleAct() {
         Player currentPlayer = moderator.getCurrentPlayer();
-        
+
         if (!currentPlayer.hasRole()) {
             view.printStatement(ANSI_RED + "must be working on a role to act." + ANSI_RESET + "\n");
-            return;
+            return false;
         }
-        
+
         try {
             moderator.handleAct(currentPlayer);
             view.printStatement(ANSI_GREEN + "Acting complete" + ANSI_RESET + "\n");
+            return true;
         } catch (Exception e) {
             view.printStatement(ANSI_RED + "Error while attempting to act " + e.getMessage() + ANSI_RESET + "\n");
+            return false;
         }
     }
 
+    // Presents available roles on the current ActingSet and lets the player pick one.
+    // Validates that the player is on an ActingSet, doesn't already have a role,
+    // and that the chosen role index is in bounds before calling the moderator.
     private void handleTakeRole() {
-
         Player currentPlayer = moderator.getCurrentPlayer();
         Room currentRoom = currentPlayer.getRoom();
-        
-        // state checks
+
         if (currentPlayer.hasRole()) {
             view.printStatement(ANSI_RED + "You have already taken another role" + ANSI_RESET + "\n");
             return;
         }
-        
+
         if (!(currentRoom instanceof ActingSet)) {
             view.printStatement(ANSI_RED + "You must be on an acting set to take a role" + ANSI_RESET + "\n");
             return;
         }
-        
+
         ActingSet actingSet = (ActingSet) currentRoom;
         ArrayList<Role> availableRoles = actingSet.getAllOpenRoles(currentPlayer.getRank());
-        
+
         if (availableRoles.isEmpty()) {
             view.printStatement(ANSI_RED + "no open roles for your rank." + ANSI_RESET + "\n");
             return;
         }
-        
-        view.printStatement("Available roles:\n");
 
+        view.printStatement("Available roles:\n");
         for (int i = 0; i < availableRoles.size(); i++) {
             Role role = availableRoles.get(i);
-            view.printStatement(i + " " + role.getPart() + " (Rank " + role.getLevel() + " " + (role.isOnCard() ? "On Card" : "Off Card") +")\n");
+            view.printStatement(i + " " + role.getPart() + " (Rank " + role.getLevel() + " " + (role.isOnCard() ? "On Card" : "Off Card") + ")\n");
         }
-        
+
         view.printStatement("Please select a role");
         String inputString = view.AskForStatement();
-        
+
         try {
             int inputInt = Integer.parseInt(inputString);
-            
+
             if (inputInt < 0 || inputInt >= availableRoles.size()) {
                 throw new NumberFormatException("Invalid role number");
             }
-            
+
             Role selectedRole = availableRoles.get(inputInt);
             moderator.handleTakeRole(currentPlayer, selectedRole);
-            
             view.printStatement(ANSI_GREEN + "You have taken role: " + selectedRole.getPart() + ANSI_RESET + "\n");
-            
-        } catch (NumberFormatException e) {
 
+        } catch (NumberFormatException e) {
             view.printStatement(ANSI_RED + "Invalid input" + ANSI_RESET + "\n");
         } catch (Exception e) {
             view.printStatement(ANSI_RED + "Error occured taking role " + e.getMessage() + ANSI_RESET + "\n");
         }
     }
 
-    private void handleRehearse() {
-
+    // Adds one rehearsal chip to the current player's role via the moderator.
+    // Returns false if the player has no role or if they already guarantee success.
+    private boolean handleRehearse() {
         Player currentPlayer = moderator.getCurrentPlayer();
-        
+
         if (!currentPlayer.hasRole()) {
-
             view.printStatement(ANSI_RED + "you must be working on a role to rehearse." + ANSI_RESET + "\n");
-
-            return;
+            return false;
         }
-        
+
         try {
             moderator.handleRehearse(currentPlayer);
-
-            view.printStatement(ANSI_GREEN + "you rehearsed, add a practice chip." + ANSI_RESET + "\n"); 
-
+            view.printStatement(ANSI_GREEN + "you rehearsed, add a practice chip." + ANSI_RESET + "\n");
         } catch (Exception e) {
             view.printStatement(ANSI_RED + "error while rehearsing:  " + e.getMessage() + ANSI_RESET + "\n");
+            return false;
         }
+        return true;
     }
 
+    // Handles the rank upgrade flow inside the Casting Office.
+    // The player must be in the Casting Office room; otherwise an error is shown.
+    // Loops showing the upgrade menu until the player selects option 5 (leave).
+    // Menu options 0–4 map to ranks 2–6 (option index + 2 = rank).
+    // Player chooses to pay in dollars ('d') or credits ('c') and the cost is validated
+    // before calling the moderator to apply the upgrade.
     private void handleUpgrade() {
-        // upgrade
         Player currPlayer;
         CastingOffice cO;
         String inputString;
         cO = moderator.getCastingOffice();
-
         currPlayer = moderator.getCurrentPlayer();
 
-        // Ensure the player is really in the casting office.
+        // Guard: player must be physically in the Casting Office to upgrade.
         try {
             if (!currPlayer.getRoom().getName().equals(cO.getName()))
-                throw new IllegalStateException("Location " + currPlayer.getRoom() + " is not " + cO.getName());
+                throw new IllegalStateException("Location " + currPlayer.getRoom().getName() + " is not " + cO.getName());
         } catch (Exception e) {
             view.printStatement(e.getMessage());
             return;
         }
-        
-        int input;        
-        while (true) {        
+
+        int input;
+        while (true) {
             try {
                 view.CastingOffice_WelcomeMessage(cO.getRanks(), cO.getMoneyPrices(), cO.getCreditPrices(), currPlayer.getDollars(), currPlayer.getCredits());
 
-                // 0-5
                 input = Integer.parseInt(view.AskForStatement());
 
-                // [5] is the option to leave the casting office front desk
+                // Option 5 exits the upgrade menu without making a purchase.
                 if (input == 5) {
                     view.CastingOffice_Leaving();
                     return;
                 }
-                
-                // increases to rank values
-                // ex: option 0 -> rank of 2
+
+                // Menu indices 0–4 correspond to ranks 2–6 (add 2 to get the rank value).
                 int requestedRank = input += 2;
 
-                // if the input is not within a options value (0-5)
-                if (!cO.getRanks().contains(requestedRank)) 
+                if (!cO.getRanks().contains(requestedRank))
                     throw new IllegalArgumentException(input + " is not a viable option.");
 
                 view.CastingOffice_DollarsOrCredits();
+                inputString = (view.AskForStatement()).toLowerCase();
 
-                    // (d or c)
-                    inputString = (view.AskForStatement()).toLowerCase();
+                if (inputString.contains("d")) {
+                    if (currPlayer.getDollars() < cO.getMoneyCost(requestedRank))
+                        throw new IllegalArgumentException(currPlayer.getDollars() + " is not enough dollars.\n");
 
-                    //Tests players dollars or credits to the rank cost
-                    if (inputString.contains("d")) {
+                    moderator.playerUpgraded(requestedRank, cO.getMoneyCost(input), 'd');
+                } else if (inputString.contains("c")) {
+                    if (currPlayer.getCredits() < cO.getCreditCost(input))
+                        throw new IllegalArgumentException(currPlayer.getCredits() + " is not enough credits.\n");
 
-                        // ex: 6 dollars < 2 required dollars ?
-                        if (currPlayer.getDollars() < cO.getMoneyCost(requestedRank))
-                            throw new IllegalArgumentException(currPlayer.getDollars() + " is not enough dollars.\n");
+                    moderator.playerUpgraded(requestedRank, cO.getCreditCost(input), 'c');
+                } else {
+                    throw new IllegalArgumentException(input + " is not a viable d or c.\n");
+                }
 
-                        moderator.playerUpgraded(requestedRank, cO.getMoneyCost(input), 'd');
+                view.CastingOffice_Choice(requestedRank);
 
-                    }
-                    else if (inputString.contains("c")) {
-                        if (currPlayer.getCredits() < cO.getCreditCost(input))
-                            throw new IllegalArgumentException(currPlayer.getCredits() + " is not enough credits.\n");
-                        
-                        moderator.playerUpgraded(requestedRank, cO.getCreditCost(input), 'c');                       
-                    }
-                    else {
-                        throw new IllegalArgumentException(input + " is not a viable d or c.\n");
-                    }
-
-                    view.CastingOffice_Choice(requestedRank);
-                    
             } catch (Exception e) {
                 view.printStatement(e.getMessage());
-            }      
-        }     
+            }
+        }
     }
 
     // This function will be called in main, this function begins 

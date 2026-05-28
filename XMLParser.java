@@ -237,6 +237,7 @@ public class XMLParser {
                 upgradeValues.add(upgradeValue);
             }
         }
+        System.out.println(upgradeValues);
         return upgradeValues;       
     }
     
