@@ -1,4 +1,6 @@
+import java.awt.event.*;
 import java.util.ArrayList;
+
 // The controller acts as the connection between the view and the model of this program.
 //     The controller will... 
 //     1. The controller recieves input from view class.
@@ -6,35 +8,15 @@ import java.util.ArrayList;
 //     3. The controller now will call the appropriate model method.
 
 //        The controller : Controller.Java
-//        The view class : View.Java
+//        The view class : situational
 //        The model class : Moderator.Java
 
 public class Controller {
-    private final View view;
+    private final BoardLayersListener view;
     private final Moderator moderator;
+    boolean completedFirstStepAction = false;
 
-    private final String introduction = 
-    """
-    Welcome to Deadwood!
-    """;
-
-    final static String ANSI_GREEN = "\u001B[32m";
-    final static String ANSI_RED = "\u001B[31m";
-    final static String ANSI_RESET = "\u001B[0m";
-
-    private final String menuList = 
-    """
-    [m] move a step\n
-    [a] act\n
-    [t] take a role\n
-    [r] rehearse\n
-    [u] upgrade\n
-    [e] end turn\n
-    [q] quit game
-    """;
-
-
-    public Controller (Moderator moderator, View view) {
+    public Controller (Moderator moderator, BoardLayersListener view) {
         this.moderator = moderator;
         this.view = view;
     }
@@ -51,17 +33,16 @@ public class Controller {
              (Note: Must be between 2-8 players)
             """;
 
-        String invalidInputFromView = ANSI_RED + """ 
+        String invalidInputFromView = """ 
             Invalid number of players. Please try again.
              (Note: Must be between 2-8 players) 
-            """ + ANSI_RESET;
+            """ ;
 
-        String validInputFromView = ANSI_GREEN + """
+        String validInputFromView ="""
             Sounds good! Let's get started.
-            """ + ANSI_RESET;
+            """;
 
         success = true;
-        view.printStatement(requestInputFromView);
 
         // This will request call the view to request input from the 
         // user for as many loops as needed until a valid input is 
@@ -75,7 +56,7 @@ public class Controller {
             // the parameters of the minimum number of players and 
             // maximum number of players elegible to play this game.
             try {
-                playerCount = Integer.parseInt(view.AskForStatement()); 
+                playerCount = Integer.parseInt(view.AskForStatement(requestInputFromView)); 
                 moderator.setUpPlayerRules(playerCount);
                 success = false;
             } 
@@ -177,62 +158,53 @@ public class Controller {
     // Each turn allows exactly one "first step" action (move, act, or rehearse),
     // plus any number of optional actions (take role, upgrade) before ending the turn.
     // The loop exits when the player chooses 'e' (end turn) or 'q' (quit).
-    private void handlePlayerTurnInput() {
-        String input;
-        boolean completedFirstStepAction = false;
+    private void handlePlayerTurnInput(String input) {
 
-        while (true) {
-            view.printStatement(playerInfo());
-            view.printStatement(otherPlayersInfo());
-            view.printStatement(menuList);
-            input = view.AskForStatement();
-
-            switch (input) {
-                case "m":
-                    if (completedFirstStepAction) {
-                        view.printStatement(ANSI_RED + "You already moved/acted/rehearsed" + ANSI_RESET + "\n");
-                        break;
-                    }
-                    if (handleMove()) {
-                        completedFirstStepAction = true;
-                    }
+        switch (input) {
+            case "m":
+                if (completedFirstStepAction) {
+                    view.printStatement("You already moved\n");
                     break;
-                case "a":
-                    if (completedFirstStepAction) {
-                        view.printStatement(ANSI_RED + "You already moved/acted/rehearsed" + ANSI_RESET + "\n");
-                        break;
-                    }
-                    if (handleAct()) {
-                        completedFirstStepAction = true;
-                    }
+                }
+                if (handleMove()) {
+                    completedFirstStepAction = true;
+                }
+                break;
+            case "a":
+                if (completedFirstStepAction) {
+                    view.printStatement("You already acted \n");
                     break;
-                case "t":
-                    // Taking a role is allowed at any point during a turn (not a first-step action).
-                    handleTakeRole();
+                }
+                if (handleAct()) {
+                    completedFirstStepAction = true;
+                }
+                break;
+            case "t":
+                // Taking a role is allowed at any point during a turn (not a first-step action).
+                handleTakeRole();
+                break;
+            case "r":
+                if (completedFirstStepAction) {
+                    view.printStatement("You already rehearsed \n");
                     break;
-                case "r":
-                    if (completedFirstStepAction) {
-                        view.printStatement(ANSI_RED + "You already moved/acted/rehearsed" + ANSI_RESET + "\n");
-                        break;
-                    }
-                    if (handleRehearse()) {
-                        completedFirstStepAction = true;
-                    }
-                    break;
-                case "u":
-                    // Upgrading is an optional action and does not count as the first-step action.
-                    handleUpgrade();
-                    break;
-                case "e":
-                    // End turn — advance to the next player.
-                    moderator.endTurn();
-                    return;
-                case "q":
-                    System.exit(0);
-                default:
-                    view.printStatement(ANSI_RED + "Invalid input, please try again." + ANSI_RESET + "\n");
-                    handlePlayerTurnInput();
-            }
+                }
+                if (handleRehearse()) {
+                    completedFirstStepAction = true;
+                }
+                break;
+            case "u":
+                // Upgrading is an optional action and does not count as the first-step action.
+                handleUpgrade();
+                break;
+            case "e":
+                // End turn — advance to the next player.
+                completedFirstStepAction = false;
+                moderator.endTurn();
+                return;
+            case "q":
+                System.exit(0);
+            default:
+                view.printStatement("Invalid input, please try again. \n");
         }
     }
 
@@ -249,38 +221,38 @@ public class Controller {
         currentPlayer = moderator.getCurrentPlayer();
 
         if (currentPlayer.hasRole()) {
-            view.printStatement(ANSI_RED + "You cannot move while working on a role." + ANSI_RESET + "\n");
+            view.printStatement("You cannot move while working on a role. \n");
             return false;
         }
 
+        // Print the full room list with indices so the player can pick by number.  
+        StringBuilder roomNames = new StringBuilder("");
+
+        for (int i = 0; i < rooms.size(); i++) {
+            roomNames.append("[" + i + "] " + rooms.get(i).getName() + "\n");
+        }
+        String availableRooms = "Player " + (moderator.getCurrentPlayerNum()+1) + " can move to: " + currentPlayer.getRoom().getNeighbors().toString() + "\n";
         while (true) {
-            // Print the full room list with indices so the player can pick by number.
-            for (int i = 0; i < rooms.size(); i++) {
-                view.printStatement("[" + i + "] " + rooms.get(i).getName() + "\n");
-            }
 
-            view.printStatement("Player " + (moderator.getCurrentPlayerNum()+1) + " can move to: " + currentPlayer.getRoom().getNeighbors().toString());
-            view.printStatement("Pick a room:");
-
-            inputString = view.AskForStatement();
+            inputString = view.AskForStatement(roomNames + availableRooms + "Pick a room:");
 
             try {
                 inputInt = Integer.parseInt(inputString);
 
                 if (inputInt < 0 || inputInt >= rooms.size())
-                    throw new NumberFormatException(ANSI_RED + "wrong number" + ANSI_RESET + "\n");
+                    throw new NumberFormatException("wrong number \n");
 
                 // Validate that the chosen room is actually adjacent to the player's current room.
                 boolean isRoomANeighbor = currentPlayer.getRoom().getNeighbors().contains(rooms.get(inputInt).getName());
 
                 if (!isRoomANeighbor)
-                    throw new IllegalArgumentException(ANSI_RED + "not a neighbor" + ANSI_RESET + "\n");
+                    throw new IllegalArgumentException("not a neighbor \n");
 
                 currentPlayer.setRoom(rooms.get(inputInt));
-                view.printStatement((ANSI_GREEN + "moved to " + rooms.get(inputInt).getName()) + ANSI_RESET + "\n");
-                if (rooms.get(inputInt) instanceof ActingSet set) {
-                    view.printStatement("Scene Info " + set.getSceneCard().toString());
-                }
+                view.printStatement(("moved to " + rooms.get(inputInt).getName())  + "\n");
+                // if (rooms.get(inputInt) instanceof ActingSet set) {
+                //     view.printStatement("Scene Info " + set.getSceneCard().toString());
+                // }
                 break;
             }
             catch (NumberFormatException e) {
@@ -299,16 +271,16 @@ public class Controller {
         Player currentPlayer = moderator.getCurrentPlayer();
 
         if (!currentPlayer.hasRole()) {
-            view.printStatement(ANSI_RED + "must be working on a role to act." + ANSI_RESET + "\n");
+            view.printStatement("must be working on a role to act. \n");
             return false;
         }
 
         try {
             moderator.handleAct(currentPlayer);
-            view.printStatement(ANSI_GREEN + "Acting complete" + ANSI_RESET + "\n");
+            view.printStatement("Acting complete \n");
             return true;
         } catch (Exception e) {
-            view.printStatement(ANSI_RED + "Error while attempting to act " + e.getMessage() + ANSI_RESET + "\n");
+            view.printStatement("Error while attempting to act " + e.getMessage()  + "\n");
             return false;
         }
     }
@@ -321,12 +293,12 @@ public class Controller {
         Room currentRoom = currentPlayer.getRoom();
 
         if (currentPlayer.hasRole()) {
-            view.printStatement(ANSI_RED + "You have already taken another role" + ANSI_RESET + "\n");
+            view.printStatement("You have already taken another role \n");
             return;
         }
 
         if (!(currentRoom instanceof ActingSet)) {
-            view.printStatement(ANSI_RED + "You must be on an acting set to take a role" + ANSI_RESET + "\n");
+            view.printStatement("You must be on an acting set to take a role \n");
             return;
         }
 
@@ -334,7 +306,7 @@ public class Controller {
         ArrayList<Role> availableRoles = actingSet.getAllOpenRoles(currentPlayer.getRank());
 
         if (availableRoles.isEmpty()) {
-            view.printStatement(ANSI_RED + "no open roles for your rank." + ANSI_RESET + "\n");
+            view.printStatement("no open roles for your rank. \n");
             return;
         }
 
@@ -344,8 +316,7 @@ public class Controller {
             view.printStatement(i + " " + role.getPart() + " (Rank " + role.getLevel() + " " + (role.isOnCard() ? "On Card" : "Off Card") + ")\n");
         }
 
-        view.printStatement("Please select a role");
-        String inputString = view.AskForStatement();
+        String inputString = view.AskForStatement("Please select a role");
 
         try {
             int inputInt = Integer.parseInt(inputString);
@@ -356,12 +327,12 @@ public class Controller {
 
             Role selectedRole = availableRoles.get(inputInt);
             moderator.handleTakeRole(currentPlayer, selectedRole);
-            view.printStatement(ANSI_GREEN + "You have taken role: " + selectedRole.getPart() + ANSI_RESET + "\n");
+            view.printStatement("You have taken role: " + selectedRole.getPart()  + "\n");
 
         } catch (NumberFormatException e) {
-            view.printStatement(ANSI_RED + "Invalid input" + ANSI_RESET + "\n");
+            view.printStatement("Invalid input \n");
         } catch (Exception e) {
-            view.printStatement(ANSI_RED + "Error occured taking role " + e.getMessage() + ANSI_RESET + "\n");
+            view.printStatement("Error occured taking role " + e.getMessage()  + "\n");
         }
     }
 
@@ -371,15 +342,15 @@ public class Controller {
         Player currentPlayer = moderator.getCurrentPlayer();
 
         if (!currentPlayer.hasRole()) {
-            view.printStatement(ANSI_RED + "you must be working on a role to rehearse." + ANSI_RESET + "\n");
+            view.printStatement("you must be working on a role to rehearse. \n");
             return false;
         }
 
         try {
             moderator.handleRehearse(currentPlayer);
-            view.printStatement(ANSI_GREEN + "you rehearsed, add a practice chip." + ANSI_RESET + "\n");
+            view.printStatement("you rehearsed, add a practice chip. \n");
         } catch (Exception e) {
-            view.printStatement(ANSI_RED + "error while rehearsing:  " + e.getMessage() + ANSI_RESET + "\n");
+            view.printStatement("error while rehearsing:  " + e.getMessage()  + "\n");
             return false;
         }
         return true;
@@ -392,63 +363,63 @@ public class Controller {
     // Player chooses to pay in dollars ('d') or credits ('c') and the cost is validated
     // before calling the moderator to apply the upgrade.
     private void handleUpgrade() {
-        Player currPlayer;
-        CastingOffice cO;
-        String inputString;
-        cO = moderator.getCastingOffice();
-        currPlayer = moderator.getCurrentPlayer();
+        // Player currPlayer;
+        // CastingOffice cO;
+        // String inputString;
+        // cO = moderator.getCastingOffice();
+        // currPlayer = moderator.getCurrentPlayer();
 
-        // Guard: player must be physically in the Casting Office to upgrade.
-        try {
-            if (!currPlayer.getRoom().getName().equals(cO.getName()))
-                throw new IllegalStateException("Location " + currPlayer.getRoom().getName() + " is not " + cO.getName());
-        } catch (Exception e) {
-            view.printStatement(e.getMessage());
-            return;
-        }
+        // // Guard: player must be physically in the Casting Office to upgrade.
+        // try {
+        //     if (!currPlayer.getRoom().getName().equals(cO.getName()))
+        //         throw new IllegalStateException("Location " + currPlayer.getRoom().getName() + " is not " + cO.getName());
+        // } catch (Exception e) {
+        //     view.printStatement(e.getMessage());
+        //     return;
+        // }
 
-        int input;
-        while (true) {
-            try {
-                view.CastingOffice_WelcomeMessage(cO.getRanks(), cO.getMoneyPrices(), cO.getCreditPrices(), currPlayer.getDollars(), currPlayer.getCredits());
+        // int input;
+        // while (true) {
+        //     try {
+        //         view.CastingOffice_WelcomeMessage(cO.getRanks(), cO.getMoneyPrices(), cO.getCreditPrices(), currPlayer.getDollars(), currPlayer.getCredits());
 
-                input = Integer.parseInt(view.AskForStatement());
+        //         input = Integer.parseInt(view.AskForStatement());
 
-                // Option 5 exits the upgrade menu without making a purchase.
-                if (input == 5) {
-                    view.CastingOffice_Leaving();
-                    return;
-                }
+        //         // Option 5 exits the upgrade menu without making a purchase.
+        //         if (input == 5) {
+        //             view.CastingOffice_Leaving();
+        //             return;
+        //         }
 
-                // Menu indices 0–4 correspond to ranks 2–6 (add 2 to get the rank value).
-                int requestedRank = input += 2;
+        //         // Menu indices 0–4 correspond to ranks 2–6 (add 2 to get the rank value).
+        //         int requestedRank = input += 2;
 
-                if (!cO.getRanks().contains(requestedRank))
-                    throw new IllegalArgumentException(input + " is not a viable option.");
+        //         if (!cO.getRanks().contains(requestedRank))
+        //             throw new IllegalArgumentException(input + " is not a viable option.");
 
-                view.CastingOffice_DollarsOrCredits();
-                inputString = (view.AskForStatement()).toLowerCase();
+        //         view.CastingOffice_DollarsOrCredits();
+        //         inputString = (view.AskForStatement()).toLowerCase();
 
-                if (inputString.contains("d")) {
-                    if (currPlayer.getDollars() < cO.getMoneyCost(requestedRank))
-                        throw new IllegalArgumentException(currPlayer.getDollars() + " is not enough dollars.\n");
+        //         if (inputString.contains("d")) {
+        //             if (currPlayer.getDollars() < cO.getMoneyCost(requestedRank))
+        //                 throw new IllegalArgumentException(currPlayer.getDollars() + " is not enough dollars.\n");
 
-                    moderator.playerUpgraded(requestedRank, cO.getMoneyCost(input), 'd');
-                } else if (inputString.contains("c")) {
-                    if (currPlayer.getCredits() < cO.getCreditCost(input))
-                        throw new IllegalArgumentException(currPlayer.getCredits() + " is not enough credits.\n");
+        //             moderator.playerUpgraded(requestedRank, cO.getMoneyCost(input), 'd');
+        //         } else if (inputString.contains("c")) {
+        //             if (currPlayer.getCredits() < cO.getCreditCost(input))
+        //                 throw new IllegalArgumentException(currPlayer.getCredits() + " is not enough credits.\n");
 
-                    moderator.playerUpgraded(requestedRank, cO.getCreditCost(input), 'c');
-                } else {
-                    throw new IllegalArgumentException(input + " is not a viable d or c.\n");
-                }
+        //             moderator.playerUpgraded(requestedRank, cO.getCreditCost(input), 'c');
+        //         } else {
+        //             throw new IllegalArgumentException(input + " is not a viable d or c.\n");
+        //         }
 
-                view.CastingOffice_Choice(requestedRank);
+        //         view.CastingOffice_Choice(requestedRank);
 
-            } catch (Exception e) {
-                view.printStatement(e.getMessage());
-            }
-        }
+        //     } catch (Exception e) {
+        //         view.printStatement(e.getMessage());
+        //     }
+        // }
     }
 
     // This function will be called in main, this function begins 
@@ -456,25 +427,68 @@ public class Controller {
     // setting up players, all the way to ending the game and closing
     // it out.
     public void startGame() {
-        view.printStatement(introduction);
-        roomSetUp();
-        dealSceneCards();
-        handlePlayerCountInput();
+        view.printStatement("Welcome to Deadwood!");
 
-        while (true) { //game
-            while (true) { //day
-                    view.printStatement("Player " + (moderator.getCurrentPlayerNum()+1) + "'s turn.\n");
-                    handlePlayerTurnInput();
-                    if (moderator.checkEndOfDay() == true) {
-                        view.printStatement("The day has ended. Players back to trailers.");
-                        break;
-                    }
-            }
-            if (moderator.daysLeft() == 0) {
-                view.printStatement("The game has ended. No days left.");
-                break;
-            }
-        }
-        view.printStatement("Player " + moderator.calculateWinner() + " wins!");
+        roomSetUp();
+
+        dealSceneCards();
+
+        handlePlayerCountInput();
+        
+        view.bAct.addMouseListener(new boardMouseListener());
+        view.bMove.addMouseListener(new boardMouseListener());
+        view.bRehearse.addMouseListener(new boardMouseListener());
+
+        view.updatePlayerInfo(playerInfo() + otherPlayersInfo());
+
+
+        // while (true) { //game
+
+        //     while (true) { //day
+
+        //             view.printStatement("Player " + (moderator.getCurrentPlayerNum()+1) + "'s turn.\n");
+
+        //             handlePlayerTurnInput();
+        //             if (moderator.checkEndOfDay() == true) {
+        //                 view.printStatement("The day has ended. Players back to trailers.");
+        //                 break;
+        //             }
+        //     }
+        //     if (moderator.daysLeft() == 0) {
+        //         view.printStatement("The game has ended. No days left.");
+        //         break;
+        //     }
+        // }
+        // view.printStatement("Player " + moderator.calculateWinner() + " wins!");
     }
+
+
+  // This class implements Mouse Events
+  class boardMouseListener implements MouseListener{
+    
+      // Code for the different button clicks
+      public void mouseClicked(MouseEvent e) {
+         
+         if (e.getSource()== view.bAct){
+            handlePlayerTurnInput("a");
+         }
+         else if (e.getSource()== view.bRehearse){
+            handlePlayerTurnInput("r");
+         }
+         else if (e.getSource()== view.bMove){
+            handlePlayerTurnInput("m");
+         }
+
+         view.updatePlayerInfo(playerInfo() + otherPlayersInfo());
+      }
+
+      public void mousePressed(MouseEvent e) {
+      }
+      public void mouseReleased(MouseEvent e) {
+      }
+      public void mouseEntered(MouseEvent e) {
+      }
+      public void mouseExited(MouseEvent e) {
+      }
+   }
 }
