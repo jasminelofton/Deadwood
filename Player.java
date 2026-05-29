@@ -11,16 +11,18 @@ public class Player {
     private Room room;
     private Role role;
     private String color;
+    private int ID;
     // Maps each role to the number of rehearsal chips earned for that role.
     // Chips are cleared when the scene wraps or the player stops working the role.
     private Map<Role, Integer> rehearsalBonuses = new HashMap<>();
 
     // Players always start in the Trailers room with no role and no dollars.
-    public Player(Room trailer) {
+    public Player(Room trailer, int id) {
         room = trailer;
         dollars = 0;
         role = null;
         color = null;
+        ID = id;
     }
 
     // Adds n rehearsal chips to the given role, creating the entry if it doesn't exist yet.
@@ -96,6 +98,9 @@ public class Player {
         return role;
     }
 
+    public int getId() {
+        return ID;
+    }
     public void addCredits(int n) {
         credits += n;
     }

@@ -15,9 +15,9 @@ import java.util.HashMap;
 
 public class BoardLayersListener extends JFrame {
 
-    private HashMap<Integer, JLabel> playerLabelsMap = new HashMap<>();
+   private HashMap<Integer, JLabel> playerLabelsMap = new HashMap<>();
     
-    private HashMap<String, JLabel> sceneCardLabelsMap = new HashMap<>();
+   private HashMap<String, JLabel> sceneCardLabelsMap = new HashMap<>();
 
   // JLabels
   JLabel boardlabel;
@@ -175,20 +175,13 @@ public class BoardLayersListener extends JFrame {
    }
 
    public void addPlayerToken(int playerID, String dieImageFilename, int x, int y) {
-
-      JLabel pLabel = new JLabel();
+      playerlabel = new JLabel();
       ImageIcon pIcon = new ImageIcon(dieImageFilename);
-      pLabel.setIcon(pIcon);
-      pLabel.setBounds(x, y, 46, 46);
-      pLabel.setVisible(true);
-      
-      playerLabelsMap.put(playerID, pLabel);
-      
-      bPane.add(pLabel, Integer.valueOf(3));
-
-      bPane.revalidate();
-      
-      bPane.repaint();
+      playerlabel.setIcon(pIcon);
+      playerlabel.setBounds(x,y,46,46);
+      playerlabel.setVisible(true);
+      bPane.add(playerlabel, Integer.valueOf(3));
+      playerLabelsMap.put(playerID, playerlabel);
    }
 
    public void movePlayerToken(int playerID, int x, int y) {
@@ -200,5 +193,6 @@ public class BoardLayersListener extends JFrame {
          bPane.repaint();
       }
    }
+
 }
 

@@ -216,8 +216,10 @@ public class Controller {
         Player currentPlayer;
         String inputString;
         int inputInt;
+        Room destination;
 
         rooms = moderator.getRooms();
+        
         currentPlayer = moderator.getCurrentPlayer();
 
         if (currentPlayer.hasRole()) {
@@ -248,6 +250,8 @@ public class Controller {
                 if (!isRoomANeighbor)
                     throw new IllegalArgumentException("not a neighbor \n");
 
+                destination = rooms.get(inputInt);
+
                 currentPlayer.setRoom(rooms.get(inputInt));
                 view.printStatement(("moved to " + rooms.get(inputInt).getName())  + "\n");
                 // if (rooms.get(inputInt) instanceof ActingSet set) {
@@ -262,6 +266,9 @@ public class Controller {
                 view.printStatement(e.getMessage());
             }
         }
+        int x = destination.getX();
+        int y = destination.getY();
+        view.movePlayerToken(currentPlayer.getId(), x, y);
         return true;
     }
 
@@ -451,13 +458,9 @@ public class Controller {
             int startY = p.getRoom().getY();
 
             
-            System.out.println(startX);
-            System.out.println(startY);
+            // System.out.println(startY);
 
-            if (startY == 248) {
-                startY = 350; // Forces them down out from under the menu labels
-            }
-            String dieAssetFile = p.getColor() + p.getRank() + ".png"; 
+            String dieAssetFile = "dice/" + p.getColor() + p.getRank() + ".png"; 
             
             view.addPlayerToken(i, dieAssetFile, startX, startY);
         }

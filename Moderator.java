@@ -54,7 +54,7 @@ public class Moderator {
 
         //create all objects for the number of players.
         for (int i = 0; i < playerCount; i++) {
-            players.add(new Player(specialTrailerRoom));
+            players.add(new Player(specialTrailerRoom, i));
         }
 
         //set the data of all these players.
