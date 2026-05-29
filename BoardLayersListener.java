@@ -30,6 +30,7 @@ public class BoardLayersListener extends JFrame {
   public JButton bAct;
   public JButton bRehearse;
   public JButton bMove;
+  public JButton bEndTurn;
   
   // JLayered Pane
   JLayeredPane bPane;
@@ -113,10 +114,16 @@ public class BoardLayersListener extends JFrame {
        bMove.setBounds(icon.getIconWidth()+10,90,100, 20);
        bMove.addMouseListener(new boardMouseListener());
 
+       bEndTurn = new JButton("END TURN");
+       bEndTurn.setBackground(Color.white);
+       bEndTurn.setBounds(icon.getIconWidth()+10,120,100, 20);
+       bEndTurn.addMouseListener(new boardMouseListener());
+
        // Place the action buttons in the top layer
        bPane.add(bAct, Integer.valueOf(2));
        bPane.add(bRehearse, Integer.valueOf(2));
        bPane.add(bMove, Integer.valueOf(2));
+       bPane.add(bEndTurn, Integer.valueOf(2));
 
   }
 
@@ -137,7 +144,10 @@ public class BoardLayersListener extends JFrame {
          }
          else if (e.getSource()== bMove){
             System.out.println("Move is Selected\n");
-         }         
+         }
+         else if (e.getSource()== bEndTurn){
+            System.out.println("Turn Ended\n");
+         }                  
       }
 
       public void mousePressed(MouseEvent e) {

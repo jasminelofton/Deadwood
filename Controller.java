@@ -445,6 +445,7 @@ public class Controller {
         view.bAct.addMouseListener(new boardMouseListener());
         view.bMove.addMouseListener(new boardMouseListener());
         view.bRehearse.addMouseListener(new boardMouseListener());
+        view.bEndTurn.addMouseListener(new boardMouseListener());
 
         String[] colors = {"b", "c", "g", "o", "p", "r", "v", "w", "y"};
     
@@ -503,6 +504,9 @@ public class Controller {
          }
          else if (e.getSource()== view.bMove){
             handlePlayerTurnInput("m");
+         }
+         else if (e.getSource()== view.bEndTurn){
+            handlePlayerTurnInput("e");
          }
 
          view.updatePlayerInfo(playerInfo() + otherPlayersInfo());
