@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.awt.event.*;
 import java.util.HashMap;
+import java.util.Random;
 
 public class BoardLayersListener extends JFrame {
 
@@ -31,6 +32,7 @@ public class BoardLayersListener extends JFrame {
   public JButton bRehearse;
   public JButton bMove;
   public JButton bEndTurn;
+  public JButton bUpgrade;
   
   // JLayered Pane
   JLayeredPane bPane;
@@ -72,12 +74,13 @@ public class BoardLayersListener extends JFrame {
        
        // Add a scene card to this room
       //  cardlabel = new JLabel();
+      //  //Random randomCard = new Random(); // in the case the card is random
       //  ImageIcon cIcon =  new ImageIcon("01.png");
       //  cardlabel.setIcon(cIcon); 
       //  cardlabel.setBounds(20,65,cIcon.getIconWidth()+2,cIcon.getIconHeight());
       //  cardlabel.setOpaque(true);
       
-       // Add the card to the lower layer
+      // Add the card to the lower layer
       //  bPane.add(cardlabel, Integer.valueOf(1));
        
       
@@ -114,15 +117,21 @@ public class BoardLayersListener extends JFrame {
        bMove.setBounds(icon.getIconWidth()+10,90,100, 20);
        bMove.addMouseListener(new boardMouseListener());
 
+       bUpgrade = new JButton("UPGRADE");
+       bUpgrade.setBackground(Color.white);
+       bUpgrade.setBounds(icon.getIconWidth()+10,120,100, 20);
+       bUpgrade.addMouseListener(new boardMouseListener());
+
        bEndTurn = new JButton("END TURN");
        bEndTurn.setBackground(Color.white);
-       bEndTurn.setBounds(icon.getIconWidth()+10,120,100, 20);
+       bEndTurn.setBounds(icon.getIconWidth()+10,150,100, 20);
        bEndTurn.addMouseListener(new boardMouseListener());
 
        // Place the action buttons in the top layer
        bPane.add(bAct, Integer.valueOf(2));
        bPane.add(bRehearse, Integer.valueOf(2));
        bPane.add(bMove, Integer.valueOf(2));
+       bPane.add(bUpgrade, Integer.valueOf(2));
        bPane.add(bEndTurn, Integer.valueOf(2));
 
   }
@@ -144,6 +153,9 @@ public class BoardLayersListener extends JFrame {
          }
          else if (e.getSource()== bMove){
             System.out.println("Move is Selected\n");
+         }
+         else if (e.getSource()== bUpgrade){
+            System.out.println("Upgrade is Selected\n");
          }
          else if (e.getSource()== bEndTurn){
             System.out.println("Turn Ended\n");
