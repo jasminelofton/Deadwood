@@ -280,6 +280,16 @@ public class Controller {
         int x = destination.getX();
         int y = destination.getY();
         view.movePlayerToken(currentPlayer.getId(), x, y);
+
+        if (destination instanceof ActingSet) {
+
+            SceneCard card = ((ActingSet)destination).getSceneCard(); 
+
+            if (((ActingSet)destination).getPlayerCount() <= 0) {
+                view.revealSceneCard((ActingSet) destination, card);
+            }
+        }
+
         return true;
     }
 

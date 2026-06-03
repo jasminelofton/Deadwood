@@ -53,6 +53,10 @@ public class ActingSet extends Room {
         return offCardPlayers;
     }
 
+    public int getPlayerCount() {
+        return onCardPlayers.size() + offCardPlayers.size();
+    }
+
     // Registers a player as working an off-card role at this set.
     public void addOffCardplayer(Player p) {
         offCardPlayers.add(p);
