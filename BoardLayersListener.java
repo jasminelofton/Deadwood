@@ -216,5 +216,51 @@ public class BoardLayersListener extends JFrame {
       }
    }
 
+   public void addSceneCard(ActingSet set) {
+      JLabel cardLabel = new JLabel();
+
+      ImageIcon cIcon = new ImageIcon("Cards/Cardback.png");
+      cardLabel.setIcon(cIcon);
+
+      int x = set.getX();
+      int y = set.getY();
+      
+      cardLabel.setBounds(x, y, cIcon.getIconWidth(), cIcon.getIconHeight());
+      cardLabel.setOpaque(true);
+      cardLabel.setVisible(true);
+      
+      bPane.add(cardLabel, Integer.valueOf(1));
+      
+      sceneCardLabelsMap.put(set.getName(), cardLabel);
+      
+      bPane.repaint();
+
+   }
+
+
+   public void removeSceneCard(ActingSet set) {
+      JLabel cardLabel = sceneCardLabelsMap.remove(set.getName());
+      if (cardLabel != null) {
+         bPane.remove(cardLabel);
+         bPane.repaint();
+      }
+   }
+
+
+   public void addShotCounters() {
+      
+   }
+
+   public void removerShotCounter(ActingSet set) {
+
+   }
+
+   public void updatePlayerDice(int rank) {
+
+   }
+
+   
+
+
 }
 

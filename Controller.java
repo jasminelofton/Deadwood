@@ -123,6 +123,17 @@ public class Controller {
         }
 
         moderator.dealSceneCards();
+
+        ArrayList<Room> rooms = moderator.getRooms();
+        for (Room room : rooms) {
+            if (room instanceof ActingSet) {
+                ActingSet actingSet = (ActingSet) room;
+                
+                if (actingSet.getSceneCard() != null) {
+                    view.addSceneCard(actingSet);
+                }
+            }
+        }
     }
 
     // Builds a summary string of every player's location except the current player's.
