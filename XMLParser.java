@@ -177,25 +177,38 @@ public class XMLParser {
         }
         return neighborNames;
     }
-    public ArrayList<String> retrieveActingSetTakes (Document document, String locationName) throws Exception {
-        Node takes;
-        NodeList takesNodeList;
-        Node take;
-        String takeValue;
-        ArrayList<String> takeValues = new ArrayList<>();
 
-        takes = returnLocationNodeListShortCut(document, "set", locationName, "takes");
-        takesNodeList = takes.getChildNodes();
-
+    public ArrayList<Take> retrieveActingSetTakes(Document document, String locationName) throws Exception {
+        ArrayList<Take> takes = new ArrayList<>();
+ 
+        Node takesNode = returnLocationNodeListShortCut(document, "set", locationName, "takes");
+        NodeList takesNodeList = takesNode.getChildNodes();
+ 
         for (int i = 0; i < takesNodeList.getLength(); i++) {
-            take = takesNodeList.item(i);
-            if (take.getNodeType() == 1) {
-                takeValue = take.getAttributes().getNamedItem("number").getNodeValue();
-                takeValues.add(takeValue);
+            Node takeNode = takesNodeList.item(i);
+ 
+            if (takeNode.getNodeType() != Node.ELEMENT_NODE) continue;
+ 
+            Element takeElement = (Element) takeNode;
+            int number = Integer.parseInt(takeElement.getAttribute("number"));
+ 
+            Area area = null;
+            NodeList areaNodes = takeElement.getElementsByTagName("area");
+            if (areaNodes.getLength() > 0) {
+                Element areaElement = (Element) areaNodes.item(0);
+                int x = Integer.parseInt(areaElement.getAttribute("x"));
+                int y = Integer.parseInt(areaElement.getAttribute("y"));
+                int h = Integer.parseInt(areaElement.getAttribute("h"));
+                int w = Integer.parseInt(areaElement.getAttribute("w"));
+                area = new Area(x, y, h, w);
             }
+ 
+            takes.add(new Take(number, area));
         }
-        return takeValues;
+ 
+        return takes;
     }
+
 
     public ArrayList<String> retrieveActingSetParts (Document document, String locationName, String attr) throws Exception {
         Node parts;

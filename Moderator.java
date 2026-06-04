@@ -197,13 +197,12 @@ public class Moderator {
 
     // sets all the takes for an acting set.
     private void setActingSetTakes(XMLParser xmlparser, Document document) throws Exception {
-         ArrayList<String> takes = new ArrayList<>();
         for (int i = 0; i < rooms.size(); i++) {
-            if (rooms.get(i).getName() != "Casting Office" && rooms.get(i).getName() != "Trailers") {
-                takes = xmlparser.retrieveActingSetTakes(document, rooms.get(i).getName());
-                ((ActingSet)rooms.get(i)).setTakes(takes);
+            if (rooms.get(i) instanceof ActingSet) {
+                ArrayList<Take> takes = xmlparser.retrieveActingSetTakes(document, rooms.get(i).getName());
+                ((ActingSet) rooms.get(i)).setTakes(takes);
             }
-        }       
+        }
     }
 
     // The name is parts because the board.xml defines each role information as such, but within the 

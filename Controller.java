@@ -132,6 +132,7 @@ public class Controller {
                 
                 if (actingSet.getSceneCard() != null) {
                     view.addSceneCard(actingSet);
+                    view.addShotCounters(actingSet);
                 }
             }
         }

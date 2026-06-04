@@ -10,7 +10,7 @@ public class ActingSet extends Room {
     private int shotCounter;           // number of takes remaining before the scene wraps
     private SceneCard sceneCard;       // the scene card currently placed on this set (null if wrapped)
     private ArrayList<Role> roles;     // permanent off-card roles belonging to this set
-    private ArrayList<String> takes;   // take labels from board.xml; size initialises shotCounter
+    private ArrayList<Take> takes;   // take labels from board.xml; size initialises shotCounter
     private ArrayList<Player> onCardPlayers;   // players working on-card (scene card) roles
     private ArrayList<Player> offCardPlayers;  // players working off-card (set board) roles
 
@@ -144,9 +144,14 @@ public class ActingSet extends Room {
     }
 
     // Stores the take labels from board.xml and initialises the shot counter.
-    public void setTakes(ArrayList<String> takes) {
-        this.takes = takes;  // may convert to Take objects later for GUI support
+    public void setTakes(ArrayList<Take> takes) {
+        this.takes = takes;
         shotCounter = takes.size();
+    }
+ 
+    // Returns all takes for this set (used by the GUI to render shot counter tokens).
+    public ArrayList<Take> getTakes() {
+        return takes;
     }
 
     // Builds the permanent off-card roles for this set from parallel lists of

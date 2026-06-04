@@ -237,6 +237,19 @@ public class BoardLayersListener extends JFrame {
 
    }
 
+   public void revealSceneCard(ActingSet set, SceneCard card) {
+      JLabel existingCardLabel = sceneCardLabelsMap.get(set.getName());
+
+      if (existingCardLabel != null) {
+         ImageIcon faceUpIcon = new ImageIcon("Cards/" + card.getImg());
+         existingCardLabel.setIcon(faceUpIcon);
+
+         existingCardLabel.setBounds(set.getX(), set.getY(), faceUpIcon.getIconWidth(), faceUpIcon.getIconHeight());
+         
+         bPane.repaint();
+      }
+   }
+
 
    public void removeSceneCard(ActingSet set) {
       JLabel cardLabel = sceneCardLabelsMap.remove(set.getName());
@@ -247,8 +260,25 @@ public class BoardLayersListener extends JFrame {
    }
 
 
-   public void addShotCounters() {
-      
+   public void addShotCounters(ActingSet set) {     
+   
+      for(Take take : set.getTakes()) {
+         Area a = take.getArea();
+         int x = a.getX();
+         int y = a.getY();
+
+         JLabel shotLabel = new JLabel();
+         
+         ImageIcon shotIcon = new ImageIcon("shot.png"); 
+         shotLabel.setIcon(shotIcon);
+         
+         shotLabel.setBounds(x, y, shotIcon.getIconWidth(), shotIcon.getIconHeight());
+         shotLabel.setVisible(true);
+         
+         bPane.add(shotLabel, Integer.valueOf(1));
+      }
+
+      bPane.repaint();
    }
 
    public void removerShotCounter(ActingSet set) {
@@ -259,7 +289,7 @@ public class BoardLayersListener extends JFrame {
 
    }
 
-   
+
 
 
 }
