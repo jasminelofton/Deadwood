@@ -1,5 +1,6 @@
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.*;
 
 // The controller acts as the connection between the view and the model of this program.
 //     The controller will... 
@@ -211,6 +212,17 @@ public class Controller {
                 // End turn — advance to the next player.
                 completedFirstStepAction = false;
                 moderator.endTurn();
+
+                if (moderator.checkEndOfDay() == true) {
+                    view.printStatement("The day has ended. Players back to trailers.");
+                    break;
+                }
+
+                if (moderator.daysLeft() == 0) {
+                    view.printStatement("The game has ended. No days left.");
+                    view.printStatement("Player " + moderator.calculateWinner() + " wins!");
+                    System.exit(0);                
+                }
                 return;
             case "q":
                 System.exit(0);
@@ -391,64 +403,107 @@ public class Controller {
     // Player chooses to pay in dollars ('d') or credits ('c') and the cost is validated
     // before calling the moderator to apply the upgrade.
     private void handleUpgrade() {
-        // Player currPlayer;
-        // CastingOffice cO;
-        // String inputString;
-        // cO = moderator.getCastingOffice();
-        // currPlayer = moderator.getCurrentPlayer();
+            Player currPlayer;
+            CastingOffice cO;
+            String inputString;
+            cO = moderator.getCastingOffice();
+            currPlayer = moderator.getCurrentPlayer();
 
-        // // Guard: player must be physically in the Casting Office to upgrade.
-        // try {
-        //     if (!currPlayer.getRoom().getName().equals(cO.getName()))
-        //         throw new IllegalStateException("Location " + currPlayer.getRoom().getName() + " is not " + cO.getName());
-        // } catch (Exception e) {
-        //     view.printStatement(e.getMessage());
-        //     return;
-        // }
+            // Guard: player must be physically in the Casting Office to upgrade.
+            try {
+                if (!currPlayer.getRoom().getName().equals(cO.getName()))
+                    throw new IllegalStateException("Location " + currPlayer.getRoom().getName() + " is not " + cO.getName());
+            } catch (Exception e) {
+                view.printStatement(e.getMessage());
+                return;
+            }
 
-        // int input;
-        // while (true) {
-        //     try {
-        //         view.CastingOffice_WelcomeMessage(cO.getRanks(), cO.getMoneyPrices(), cO.getCreditPrices(), currPlayer.getDollars(), currPlayer.getCredits());
+            int input;
+            while (true) {
+                try {
+                    String message = CastingOffice_WelcomeMessage(cO.getRanks(), cO.getMoneyPrices(), cO.getCreditPrices(), currPlayer.getDollars(), currPlayer.getCredits());
 
-        //         input = Integer.parseInt(view.AskForStatement());
+                    input = Integer.parseInt(view.AskForStatement(message));
 
-        //         // Option 5 exits the upgrade menu without making a purchase.
-        //         if (input == 5) {
-        //             view.CastingOffice_Leaving();
-        //             return;
-        //         }
+                    // Option 5 exits the upgrade menu without making a purchase.
+                    if (input == 5) {
+                        view.printStatement("Leaving the Casting Office front desk.");
+                        return;
+                    }
 
-        //         // Menu indices 0–4 correspond to ranks 2–6 (add 2 to get the rank value).
-        //         int requestedRank = input += 2;
+                    // Menu indices 0–4 correspond to ranks 2–6 (add 2 to get the rank value).
+                    int requestedRank = input += 2;
 
-        //         if (!cO.getRanks().contains(requestedRank))
-        //             throw new IllegalArgumentException(input + " is not a viable option.");
+                    if (!cO.getRanks().contains(requestedRank))
+                        throw new IllegalArgumentException(input + " is not a viable option.");
 
-        //         view.CastingOffice_DollarsOrCredits();
-        //         inputString = (view.AskForStatement()).toLowerCase();
+                    inputString = (view.AskForStatement("In Dollars Or Credits?\n[d]\n[c]")).toLowerCase();
 
-        //         if (inputString.contains("d")) {
-        //             if (currPlayer.getDollars() < cO.getMoneyCost(requestedRank))
-        //                 throw new IllegalArgumentException(currPlayer.getDollars() + " is not enough dollars.\n");
+                    if (inputString.contains("d")) {
+                        if (currPlayer.getDollars() < cO.getMoneyCost(requestedRank))
+                            throw new IllegalArgumentException(currPlayer.getDollars() + " is not enough dollars.\n");
 
-        //             moderator.playerUpgraded(requestedRank, cO.getMoneyCost(input), 'd');
-        //         } else if (inputString.contains("c")) {
-        //             if (currPlayer.getCredits() < cO.getCreditCost(input))
-        //                 throw new IllegalArgumentException(currPlayer.getCredits() + " is not enough credits.\n");
+                        moderator.playerUpgraded(requestedRank, cO.getMoneyCost(input), 'd');
+                    } else if (inputString.contains("c")) {
+                        if (currPlayer.getCredits() < cO.getCreditCost(input))
+                            throw new IllegalArgumentException(currPlayer.getCredits() + " is not enough credits.\n");
 
-        //             moderator.playerUpgraded(requestedRank, cO.getCreditCost(input), 'c');
-        //         } else {
-        //             throw new IllegalArgumentException(input + " is not a viable d or c.\n");
-        //         }
+                        moderator.playerUpgraded(requestedRank, cO.getCreditCost(input), 'c');
+                    } else {
+                        throw new IllegalArgumentException(input + " is not a viable d or c.\n");
+                    }
 
-        //         view.CastingOffice_Choice(requestedRank);
+                    view.printStatement("Congratulations. Rank upgraded to " + requestedRank + ".");
 
-        //     } catch (Exception e) {
-        //         view.printStatement(e.getMessage());
-        //     }
-        // }
+                } catch (Exception e) {
+                    view.printStatement(e.getMessage());
+                }
+            }
+        }
+
+    // Displays the Casting Office upgrade menu showing available ranks and their costs,
+    // as well as the player's current dollar and credit balances.
+    // Prints an error and returns early if the pricing lists have mismatched sizes.
+    public String CastingOffice_WelcomeMessage(List<Integer> rank, List<Integer> dollars,
+        List<Integer> credits, int playerDollars, int playerCredits) {
+
+        String welcomeMessage;
+        StringBuilder pricing = new StringBuilder();
+
+        welcomeMessage = String.format("""
+            Welcome to the casting office front desk,
+            You can exchange money or credits for an upgrade in rank.
+            You hold:
+            Dollars: %d
+            Credits: %d
+            Exchange for rank or leave the casting office. Thank you.
+            """, playerDollars, playerCredits);
+
+        pricing.append(welcomeMessage);
+            
+        pricing.append("""
+            The Prices to Upgrade are as follows.\n
+            [ ] Rank | Dollars | Credits\n
+            """);
+
+        // Guard against mismatched pricing data before attempting to print the table.
+        if (dollars.size() != credits.size() || credits.size() != rank.size()) {
+            view.printStatement(
+                "Dollars contains " + dollars.size() + "elements but credits contains " +
+                credits.size() + " elements and rank contains " + rank.size() + " elements");
+            return "mismatched input data";
+        }
+
+        for (int i = 0; i < dollars.size(); i++) {
+            pricing.append(String.format("[%d] %2d %8d %8d\n", i, rank.get(i), dollars.get(i),
+            credits.get(i)));
+        }
+        pricing.append("[5] leave Casting Office desk.\n");
+        pricing.append("choose a number");
+        return pricing.toString();
     }
+
+
 
     // This function will be called in main, this function begins 
     // the actual game, starting with initializing the board, 
