@@ -11,14 +11,15 @@ import java.awt.*;
 import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
 public class BoardLayersListener extends JFrame {
 
    private HashMap<Integer, JLabel> playerLabelsMap = new HashMap<>();
-    
    private HashMap<String, JLabel> sceneCardLabelsMap = new HashMap<>();
+   private HashMap<String, ArrayList<JLabel>> shotCountersMap = new HashMap<>();
 
   // JLabels
   JLabel boardlabel;
@@ -261,6 +262,8 @@ public class BoardLayersListener extends JFrame {
 
 
    public void addShotCounters(ActingSet set) {     
+
+      shotCountersMap.putIfAbsent(set.getName(), new ArrayList<>());
    
       for(Take take : set.getTakes()) {
          Area a = take.getArea();
@@ -276,13 +279,21 @@ public class BoardLayersListener extends JFrame {
          shotLabel.setVisible(true);
          
          bPane.add(shotLabel, Integer.valueOf(1));
+
+         shotCountersMap.get(set.getName()).add(shotLabel);
       }
 
       bPane.repaint();
    }
 
    public void removerShotCounter(ActingSet set) {
-
+      ArrayList<JLabel> shots = shotCountersMap.get(set.getName());
+      
+      if (shots != null && !shots.isEmpty()) {
+         JLabel lastShotLabel = shots.remove(shots.size() - 1);
+         bPane.remove(lastShotLabel);
+         bPane.repaint();
+      }
    }
 
    public void updatePlayerDice(int rank) {

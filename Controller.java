@@ -318,6 +318,7 @@ public class Controller {
 
         try {
             moderator.handleAct(currentPlayer);
+            view.removerShotCounter((ActingSet)currentPlayer.getRoom());
             view.printStatement("Acting complete \n");
             return true;
         } catch (Exception e) {
