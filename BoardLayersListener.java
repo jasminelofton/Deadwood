@@ -29,6 +29,7 @@ public class BoardLayersListener extends JFrame {
   JLabel imagelabel;
   
   //JButtons
+  public JButton bTakeRole;
   public JButton bAct;
   public JButton bRehearse;
   public JButton bMove;
@@ -102,6 +103,11 @@ public class BoardLayersListener extends JFrame {
        mLabel.setBounds(icon.getIconWidth()+40,0,100,20);
        bPane.add(mLabel,Integer.valueOf(2));
 
+       bTakeRole = new JButton("TAKE_ROLE");
+       bTakeRole.setBackground(Color.white);
+       bTakeRole.setBounds(icon.getIconWidth()+10, 180,100, 20);
+       bTakeRole.addMouseListener(new boardMouseListener());
+
        // Create Action buttons
        bAct = new JButton("ACT");
        bAct.setBackground(Color.white);
@@ -129,6 +135,7 @@ public class BoardLayersListener extends JFrame {
        bEndTurn.addMouseListener(new boardMouseListener());
 
        // Place the action buttons in the top layer
+       bPane.add(bTakeRole, Integer.valueOf(2));
        bPane.add(bAct, Integer.valueOf(2));
        bPane.add(bRehearse, Integer.valueOf(2));
        bPane.add(bMove, Integer.valueOf(2));
@@ -297,6 +304,22 @@ public class BoardLayersListener extends JFrame {
    }
 
    public void updatePlayerDice(int rank) {
+
+   }
+
+   public void takeRole(int playerID, Role role) {
+
+      JLabel pLabel = playerLabelsMap.get(playerID);
+
+      Area a = role.getArea();
+      int x = a.getX();
+      int y = a.getY();
+      
+      if (pLabel != null) {
+
+         pLabel.setBounds(x, y, 46, 46);
+         bPane.repaint();
+      }
 
    }
 

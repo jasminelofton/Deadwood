@@ -369,6 +369,7 @@ public class Controller {
 
             Role selectedRole = availableRoles.get(inputInt);
             moderator.handleTakeRole(currentPlayer, selectedRole);
+            view.takeRole(currentPlayer.getId(), selectedRole);
             view.printStatement("You have taken role: " + selectedRole.getPart()  + "\n");
 
         } catch (NumberFormatException e) {
@@ -520,6 +521,7 @@ public class Controller {
 
         handlePlayerCountInput();
         
+        view.bTakeRole.addMouseListener(new boardMouseListener());
         view.bAct.addMouseListener(new boardMouseListener());
         view.bMove.addMouseListener(new boardMouseListener());
         view.bRehearse.addMouseListener(new boardMouseListener());
@@ -585,6 +587,9 @@ public class Controller {
          }
          else if (e.getSource()== view.bEndTurn){
             handlePlayerTurnInput("e");
+         }
+         else if (e.getSource() == view.bTakeRole) {
+            handleTakeRole();
          }
 
          view.updatePlayerInfo(playerInfo() + otherPlayersInfo());

@@ -208,17 +208,12 @@ public class Moderator {
     // The name is parts because the board.xml defines each role information as such, but within the 
     // game, these parts will be defined by the name role(s).
     private void setActingSetParts(XMLParser xmlparser, Document document) throws Exception {
-           ArrayList<String> parts = new ArrayList<>();
-           ArrayList<Integer> levels = new ArrayList<>();
-           ArrayList<String> lines = new ArrayList<>();
         for (int i = 0; i < rooms.size(); i++) {
-            if (rooms.get(i).getName() != "Casting Office" && rooms.get(i).getName() != "Trailers") {
-                parts = xmlparser.retrieveActingSetParts(document, rooms.get(i).getName(), "name");
-                levels = xmlparser.retrieveActingSetPartsAsIntegers(document, rooms.get(i).getName(), "level");
-                lines = xmlparser.retrieveActingSetParts(document, rooms.get(i).getName(), "line");
-                ((ActingSet)rooms.get(i)).setRoles(parts, levels, lines);
+            if (rooms.get(i) instanceof ActingSet) {
+                ArrayList<Role> roles = xmlparser.retrieveActingSetRoles(document, rooms.get(i).getName());
+                ((ActingSet) rooms.get(i)).setRoles(roles);
             }
-        }             
+        }
     }
 
     private void setCastingOfficeUpgrade(XMLParser xmlparser, Document document) throws Exception {

@@ -13,6 +13,7 @@ class Role {
     private String line;    // the dialogue line associated with this role
     private Boolean available;  // false once a player has taken this role
     private Boolean onCard;     // true if this role is on the scene card, false if on the set
+    private Area area;
 
     // Roles always start as available; onCard is set based on where the role was parsed from.
     public Role(String part, int level, String line, Boolean onCard) {
@@ -51,5 +52,13 @@ class Role {
     // Marks this role as taken (false) or available again (true).
     public void setAvailable(Boolean isAvail) {
         available = isAvail;
+    }
+
+    public void setArea(Area area) {
+        this.area = area;
+    }
+
+    public Area getArea() {
+        return area;
     }
 }

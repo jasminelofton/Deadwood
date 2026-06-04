@@ -210,60 +210,32 @@ public class XMLParser {
     }
 
 
-    public ArrayList<String> retrieveActingSetParts (Document document, String locationName, String attr) throws Exception {
-        Node parts;
-        NodeList partsNodeList;
-        Node part;
-        String partName;
-        ArrayList<String> partNames = new ArrayList<>();
-
-        parts = returnLocationNodeListShortCut(document, "set", locationName, "parts");
-        partsNodeList = parts.getChildNodes();
-
+    public ArrayList<Role> retrieveActingSetRoles(Document document, String locationName) throws Exception {
+        ArrayList<Role> roles = new ArrayList<>();
+ 
+        Node partsNode = returnLocationNodeListShortCut(document, "set", locationName, "parts");
+        NodeList partsNodeList = partsNode.getChildNodes();
+ 
         for (int i = 0; i < partsNodeList.getLength(); i++) {
-            part = partsNodeList.item(i);
-            if (part.getNodeType() == 1) {
-                try {
-                partName = part.getAttributes().getNamedItem(attr).getNodeValue();                    
-                } catch (Exception e) {
-                    partName = part.getTextContent();
-                }                  
-                partNames.add(partName);
-            }
+            Node partNode = partsNodeList.item(i);
+ 
+            if (partNode.getNodeType() != Node.ELEMENT_NODE) continue;
+ 
+            Element partElement = (Element) partNode;
+ 
+            String name  = partElement.getAttribute("name");
+            int    level = Integer.parseInt(partElement.getAttribute("level"));
+            String line  = parseLine(partElement);
+            Area   area  = parseArea(partElement);
+ 
+            Role role = new Role(name, level, line, false);
+            role.setArea(area);
+            roles.add(role);
         }
-        return partNames;
+ 
+        return roles;
     }
 
-    public ArrayList<Integer> retrieveActingSetPartsAsIntegers(Document document, String locationName, String attr) throws Exception {
-        Node parts;
-        NodeList partsNodeList;
-        Node part;
-        String partName;
-        ArrayList<Integer> partLevels = new ArrayList<>();
-
-        parts = returnLocationNodeListShortCut(document, "set", locationName, "parts");
-        partsNodeList = parts.getChildNodes();
-
-        for (int i = 0; i < partsNodeList.getLength(); i++) {
-            part = partsNodeList.item(i);
-            
-            if (part.getNodeType() == Node.ELEMENT_NODE) { 
-                try {
-                    partName = part.getAttributes().getNamedItem(attr).getNodeValue();                    
-                } catch (Exception e) {
-                    partName = part.getTextContent();
-                }                  
-                
-                try {
-                    Integer level = Integer.valueOf(partName.trim());
-                    partLevels.add(level);
-                } catch (NumberFormatException e) {
-                    System.err.println("could not parse " + partName + " as an integer");
-                }
-            }
-        }
-        return partLevels;
-    }
 
     public ArrayList<String> retrieveCastingOfficeParts(Document document, String locationName, String attr) throws Exception {
         Node upgrades;
@@ -361,10 +333,10 @@ public class XMLParser {
                 String line = parseLine(partElement);
 
                 
-                Role part = new Role(name, level, line, true); // only using to retriev on card roles no, onCard attribute in xml either
+                Role part = new Role(name, level, line, true);
                 
-                // Area area = parseArea(partElement);
-                // part.setArea(area);
+                Area area = parseArea(partElement);
+                part.setArea(area);
                 
                 roles.add(part);
             }

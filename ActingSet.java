@@ -156,9 +156,8 @@ public class ActingSet extends Room {
 
     // Builds the permanent off-card roles for this set from parallel lists of
     // part names, rank levels, and dialogue lines parsed out of board.xml.
-    public void setRoles(ArrayList<String> parts, ArrayList<Integer> levels, ArrayList<String> lines) {
-        for (int i = 0; i < parts.size(); i++) {
-            roles.add(new Role(parts.get(i), levels.get(i), lines.get(i), false));
-        }
+    public void setRoles(ArrayList<Role> roles) {
+        this.roles = roles;
     }
+    
 }
