@@ -103,7 +103,7 @@ public class BoardLayersListener extends JFrame {
        mLabel.setBounds(icon.getIconWidth()+40,0,100,20);
        bPane.add(mLabel,Integer.valueOf(2));
 
-       bTakeRole = new JButton("TAKE_ROLE");
+       bTakeRole = new JButton("TAKE ROLE");
        bTakeRole.setBackground(Color.white);
        bTakeRole.setBounds(icon.getIconWidth()+10, 180,100, 20);
        bTakeRole.addMouseListener(new boardMouseListener());
