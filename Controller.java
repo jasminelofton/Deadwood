@@ -372,7 +372,10 @@ public class Controller {
 
             Role selectedRole = availableRoles.get(inputInt);
             moderator.handleTakeRole(currentPlayer, selectedRole);
-            view.takeRole(currentPlayer.getId(), selectedRole);
+
+
+
+            view.takeRole(currentPlayer.getId(), selectedRole, currentRoom.area);
             view.printStatement("You have taken role: " + selectedRole.getPart()  + "\n");
 
         } catch (NumberFormatException e) {

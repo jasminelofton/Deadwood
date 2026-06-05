@@ -306,14 +306,20 @@ public class BoardLayersListener extends JFrame {
 
    }
 
-   public void takeRole(int playerID, Role role) {
-
+   public void takeRole(int playerID, Role role, Area setArea) {
+      int x;
+      int y;
       JLabel pLabel = playerLabelsMap.get(playerID);
 
       Area a = role.getArea();
-      int x = a.getX();
-      int y = a.getY();
-      
+      if (role.isOnCard()) {
+         x = a.getX() + setArea.getX();
+         y = a.getY() + setArea.getY();
+      } else {
+         x = a.getX(); // + room.getarea
+         y = a.getY();
+      }
+
       if (pLabel != null) {
 
          pLabel.setBounds(x, y, 46, 46);
