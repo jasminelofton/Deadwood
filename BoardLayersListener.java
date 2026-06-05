@@ -8,12 +8,10 @@
 */
 
 import java.awt.*;
-import javax.swing.*;
-import javax.imageio.ImageIO;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
+import javax.swing.*;
 
 public class BoardLayersListener extends JFrame {
 
@@ -264,6 +262,7 @@ public class BoardLayersListener extends JFrame {
       if (cardLabel != null) {
          bPane.remove(cardLabel);
          bPane.repaint();
+
       }
    }
 

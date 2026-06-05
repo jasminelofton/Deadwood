@@ -294,7 +294,7 @@ public class Moderator {
             
             payOffCardBonuses(offCardPlayers);
         }
-        
+        System.out.println("removing scene card from acting set");
         set.removeSceneCard();
         
         for (Player player : onCardPlayers) {
@@ -376,7 +376,7 @@ public class Moderator {
         return false;
     }
 
-    public void handleAct(Player player) {
+    public boolean handleAct(Player player) {
 
         Dice dice = new Dice();
 
@@ -413,6 +413,11 @@ public class Moderator {
         }
         
         player.clearRehearsalBonus(currentRole);
+
+         if (actingSet.getShotCounter() == 0) {
+            return true;
+        }       
+        return false;
     }
 
     public CastingOffice getCastingOffice() {

@@ -316,9 +316,13 @@ public class Controller {
         }
 
         try {
-            moderator.handleAct(currentPlayer);
+            boolean actingEnded = moderator.handleAct(currentPlayer);
+
             view.removerShotCounter((ActingSet)currentPlayer.getRoom());
             view.printStatement("Acting complete \n");
+            if (actingEnded) {
+                view.removeSceneCard((ActingSet)currentPlayer.getRoom());
+            }
             return true;
         } catch (Exception e) {
             view.printStatement("Error while attempting to act " + e.getMessage()  + "\n");
@@ -523,6 +527,7 @@ public class Controller {
         view.bTakeRole.addMouseListener(new boardMouseListener());
         view.bAct.addMouseListener(new boardMouseListener());
         view.bMove.addMouseListener(new boardMouseListener());
+        view.bUpgrade.addMouseListener(new boardMouseListener());
         view.bRehearse.addMouseListener(new boardMouseListener());
         view.bEndTurn.addMouseListener(new boardMouseListener());
 
@@ -583,6 +588,9 @@ public class Controller {
          }
          else if (e.getSource()== view.bMove){
             handlePlayerTurnInput("m");
+         }
+         else if (e.getSource()== view.bUpgrade){
+            handlePlayerTurnInput("u");
          }
          else if (e.getSource()== view.bEndTurn){
             handlePlayerTurnInput("e");
