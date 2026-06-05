@@ -1,5 +1,4 @@
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.*;
 
 // The controller acts as the connection between the view and the model of this program.
@@ -176,7 +175,7 @@ public class Controller {
         switch (input) {
             case "m":
                 if (completedFirstStepAction) {
-                    view.printStatement("You already moved\n");
+                    view.printStatement("You already made a move\n");
                     break;
                 }
                 if (handleMove()) {
@@ -185,7 +184,7 @@ public class Controller {
                 break;
             case "a":
                 if (completedFirstStepAction) {
-                    view.printStatement("You already acted \n");
+                    view.printStatement("You already made a move\n");
                     break;
                 }
                 if (handleAct()) {
@@ -198,7 +197,7 @@ public class Controller {
                 break;
             case "r":
                 if (completedFirstStepAction) {
-                    view.printStatement("You already rehearsed \n");
+                    view.printStatement("You already made a move\n");
                     break;
                 }
                 if (handleRehearse()) {
