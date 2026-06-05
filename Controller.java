@@ -316,11 +316,18 @@ public class Controller {
         }
 
         try {
-            boolean actingEnded = moderator.handleAct(currentPlayer);
+            boolean success = moderator.handleAct(currentPlayer);
+            boolean wrapScene = moderator.checkWrapScene(currentPlayer);
+
+            if (success) {
+                view.printStatement("Success! Your acting roll succeeded. A shot counter has been removed!");
+            } else {
+                view.printStatement("Failure! Your acting roll was too low. Better luck next time!");
+            }
 
             view.removerShotCounter((ActingSet)currentPlayer.getRoom());
-            view.printStatement("Acting complete \n");
-            if (actingEnded) {
+
+            if (wrapScene) {
                 view.removeSceneCard((ActingSet)currentPlayer.getRoom());
             }
             return true;
