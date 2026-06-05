@@ -408,13 +408,19 @@ public class Moderator {
             }
         }
         
-        if (actingSet.getShotCounter() == 0) {
-            wrapScene(actingSet);
+        return success;
+    }
+
+    public boolean checkWrapScene(Player player) {
+        ActingSet set = ((ActingSet)player.getRoom());
+
+        if (set.getShotCounter() == 0) {
+            wrapScene(set);
         }
         
-        player.clearRehearsalBonus(currentRole);
+        player.clearRehearsalBonus(player.getRole());
 
-         if (actingSet.getShotCounter() == 0) {
+        if (set.getShotCounter() == 0) {
             return true;
         }       
         return false;
