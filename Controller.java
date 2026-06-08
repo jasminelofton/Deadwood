@@ -556,6 +556,7 @@ public class Controller {
             // System.out.println(startY);
 
             String dieAssetFile = "dice/" + p.getColor() + p.getRank() + ".png"; 
+            p.setImg(dieAssetFile);
             
             view.addPlayerToken(i, dieAssetFile, startX, startY);
         }
@@ -581,6 +582,44 @@ public class Controller {
         //     }
         // }
         // view.printStatement("Player " + moderator.calculateWinner() + " wins!");
+    }
+
+    private void refreshDashboard() {
+        Player current = moderator.getCurrentPlayer();
+        int playerNum = moderator.getCurrentPlayerNum() + 1;
+        
+        boolean isOnScene = current.getRoom() instanceof ActingSet;
+        int budget = 0;
+        boolean isRevealed = true;
+        
+        if (isOnScene) {
+            ActingSet actingSet = (ActingSet) current.getRoom();
+            if (actingSet.getSceneCard() != null) {
+                budget = actingSet.getSceneCard().getBudget();
+            }
+        }
+
+        String availableMoves = "";
+        if (!completedFirstStepAction) availableMoves += "[Move] "; //
+        if (current.hasRole()) availableMoves += "[Act] [Rehearse] "; //
+        else if (isOnScene) availableMoves += "[Take Role] ";
+        availableMoves += "[End Turn]"; //
+
+        // Assemble the clean DTO payload
+        PlayerDTO dto = new PlayerDTO(
+            playerNum,
+            current.getImg(),
+            current.getRank(),
+            current.getDollars(),
+            current.getCredits(),
+            isOnScene,
+            current.getRehearsalBonus(current.getRole()),
+            budget,
+            isRevealed,
+            availableMoves
+        );
+
+        view.updatePlayerInfo(dto);
     }
 
 
@@ -610,6 +649,7 @@ public class Controller {
          }
 
          view.updatePlayerInfo(playerInfo() + otherPlayersInfo());
+         refreshDashboard();
       }
 
       public void mousePressed(MouseEvent e) {
