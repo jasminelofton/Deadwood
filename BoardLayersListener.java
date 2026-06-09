@@ -333,6 +333,36 @@ public class BoardLayersListener extends JFrame {
 
 
 
+   public void updatePlayerInfo(PlayerDTO dto) {
+         String htmlText = "<html>" +
+               "<body style='font-family: Arial, sans-serif; font-size: 11px; padding: 5px;'>" +
+               "  <table border='0' cellspacing='10' cellpadding='0'>" +
+               "    <tr>" +
+               "      <td valign='middle' style='font-size: 14px; font-weight: bold; color: #8B0000;'>" +
+               "        CURRENT TURN: Player " + dto.getPlayerNumber() + " " +
+               "        <img src='file:" + dto.getDieImageFilename() + "' width='30' height='30' align='middle'>" +
+               "      </td>" +
+               "      <td style='border-left: 2px solid #bbb; padding-left: 15px;'>" +
+               "        <b>Rank:</b> " + dto.getRank() + " | " +
+               "        <b>Dollars:</b> <span style='color: green;'>$" + dto.getDollars() + "</span> | " +
+               "        <b>Credits:</b> <span style='color: blue;'>" + dto.getCredits() + "cr</span>" +
+               "      </td>" +
+               "      <td style='border-left: 2px solid #bbb; padding-left: 15px;'>" +
+               "        <b>Scene Status:</b> " + formatSceneString(dto) + "<br>" +
+               "        <b>Available Options:</b> <span style='color: #444; font-weight: bold;'>" + dto.getAvailableMoves() + "</span>" +
+               "      </td>" +
+               "    </tr>" +
+               "  </table>" +
+               "</body>" +
+               "</html>";
 
+         playerInfoLabel.setText(htmlText); //
+   }
+
+   private String formatSceneString(PlayerDTO dto) {
+      if (!dto.isOnScene()) return "Not on a scene";
+      if (!dto.isCardRevealed()) return "Scene Card Face Down";
+      return "Rehearsal Bonus: " + dto.getRehearsalCount() + " / Budget: " + dto.getSceneBudget();
+   }
 }
 
