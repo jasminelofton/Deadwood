@@ -475,7 +475,9 @@ public class Controller {
                     }
 
                     view.printStatement("Congratulations. Rank upgraded to " + requestedRank + ".");
-
+                    String dieAssetFile = "dice/" + currPlayer.getColor() + currPlayer.getRank() + ".png"; 
+            
+                    view.updatePlayerDice(moderator.getCurrentPlayerNum(), dieAssetFile);
                 } catch (Exception e) {
                     view.printStatement(e.getMessage());
                 }

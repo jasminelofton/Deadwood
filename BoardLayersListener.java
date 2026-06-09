@@ -302,7 +302,10 @@ public class BoardLayersListener extends JFrame {
       }
    }
 
-   public void updatePlayerDice(int rank) {
+   public void updatePlayerDice(int playerID, String dieImageFilename) {
+      ImageIcon pIcon = new ImageIcon(dieImageFilename);
+      JLabel player = playerLabelsMap.get(playerID);
+      player.setIcon(pIcon);
 
    }
 
