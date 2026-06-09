@@ -569,6 +569,7 @@ public class Controller {
         }
 
         view.updatePlayerInfo(playerInfo() + otherPlayersInfo());
+        refreshDashboard();
 
 
         // while (true) { //game
@@ -594,7 +595,7 @@ public class Controller {
     private void refreshDashboard() {
         Player current = moderator.getCurrentPlayer();
         int playerNum = moderator.getCurrentPlayerNum() + 1;
-        
+        boolean activeScene = false;
         boolean onSet = current.getRoom() instanceof ActingSet;
         int budget = 0;
         boolean isRevealed = true;
@@ -603,6 +604,7 @@ public class Controller {
             ActingSet actingSet = (ActingSet) current.getRoom();
             if (actingSet.getSceneCard() != null) {
                 budget = actingSet.getSceneCard().getBudget();
+                activeScene = true;
             }
         }
 
@@ -611,7 +613,7 @@ public class Controller {
         if (completedFirstStepAction) {
             availableMoves.append("[End Turn]");
 
-            if (onSet && !current.hasRole()) {
+            if (onSet && !current.hasRole() && activeScene) {
                 availableMoves.append("[Take Role] ");
             }
         } else {
@@ -619,7 +621,7 @@ public class Controller {
                 availableMoves.append("[Act] [Rehearse] [End Turn]");
             } else {
                 availableMoves.append("[Move] ");
-                if (onSet) {
+                if (onSet && activeScene) {
                     availableMoves.append("[Take Role] ");
                 }
                 availableMoves.append("[End Turn]");
