@@ -350,7 +350,7 @@ public class Moderator {
 
     public boolean checkEndOfDay() {
         // day ends when 1 card is running.
-        if (cardsLeft == 9) {
+        if (cardsLeft == 1) {
             Player player;
             // return to trailers
             // reset role
