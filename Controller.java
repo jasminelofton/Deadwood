@@ -445,40 +445,57 @@ public class Controller {
                 try {
                     String message = CastingOffice_WelcomeMessage(cO.getRanks(), cO.getMoneyPrices(), cO.getCreditPrices(), currPlayer.getDollars(), currPlayer.getCredits());
 
-                    input = Integer.parseInt(view.AskForStatement(message));
+                    String rawInput = view.AskForStatement(message);
 
-                    // Option 5 exits the upgrade menu without making a purchase.
+                    if (rawInput == null) {
+                        view.printStatement("Exiting the Casting Office menu.");
+                        return;
+                    }
+
+                    input = Integer.parseInt(rawInput);
+
                     if (input == 5) {
                         view.printStatement("Leaving the Casting Office front desk.");
                         return;
                     }
 
-                    // Menu indices 0–4 correspond to ranks 2–6 (add 2 to get the rank value).
-                    int requestedRank = input += 2;
+                    int requestedRank = input + 2;
 
                     if (!cO.getRanks().contains(requestedRank))
                         throw new IllegalArgumentException(input + " is not a viable option.");
 
-                    inputString = (view.AskForStatement("In Dollars Or Credits?\n[d]\n[c]")).toLowerCase();
+                    String currencyChoice = view.AskForStatement("In Dollars Or Credits?\n[d]\n[c]");
+                    
+                    if (currencyChoice == null) {
+                        view.printStatement("Exiting the Casting Office menu.");
+                        return; 
+                    }
+                    
+                    inputString = currencyChoice.toLowerCase();
 
                     if (inputString.contains("d")) {
                         if (currPlayer.getDollars() < cO.getMoneyCost(requestedRank))
                             throw new IllegalArgumentException(currPlayer.getDollars() + " is not enough dollars.\n");
 
-                        moderator.playerUpgraded(requestedRank, cO.getMoneyCost(input), 'd');
+                        moderator.playerUpgraded(requestedRank, cO.getMoneyCost(requestedRank), 'd');
                     } else if (inputString.contains("c")) {
-                        if (currPlayer.getCredits() < cO.getCreditCost(input))
+                        if (currPlayer.getCredits() < cO.getCreditCost(requestedRank))
                             throw new IllegalArgumentException(currPlayer.getCredits() + " is not enough credits.\n");
 
-                        moderator.playerUpgraded(requestedRank, cO.getCreditCost(input), 'c');
+                        moderator.playerUpgraded(requestedRank, cO.getCreditCost(requestedRank), 'c');
                     } else {
-                        throw new IllegalArgumentException(input + " is not a viable d or c.\n");
+                        throw new IllegalArgumentException(inputString + " is not a viable d or c.\n");
                     }
 
                     view.printStatement("Congratulations. Rank upgraded to " + requestedRank + ".");
                     String dieAssetFile = "dice/" + currPlayer.getColor() + currPlayer.getRank() + ".png"; 
-            
+
                     view.updatePlayerDice(moderator.getCurrentPlayerNum(), dieAssetFile);
+                    
+                    return;
+
+                } catch (NumberFormatException e) {
+                    view.printStatement("Please enter a valid number or option.");
                 } catch (Exception e) {
                     view.printStatement(e.getMessage());
                 }
