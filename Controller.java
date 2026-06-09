@@ -220,6 +220,7 @@ public class Controller {
 
                 if (moderator.checkEndOfDay() == true) {
                     view.printStatement("The day has ended. Players back to trailers.");
+                    daySetup();
                     break;
                 }
 
@@ -526,7 +527,20 @@ public class Controller {
         return pricing.toString();
     }
 
+    private void daySetup() {
 
+        dealSceneCards();
+
+        ArrayList<Player> players = moderator.getPlayers();
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
+            
+            int startX = p.getRoom().getX() + (i * 15); 
+            int startY = p.getRoom().getY();
+
+            view.movePlayerToken(i, startX, startY);
+        }
+    }
 
     // This function will be called in main, this function begins 
     // the actual game, starting with initializing the board, 
@@ -534,9 +548,7 @@ public class Controller {
     // it out.
     public void startGame() {
         view.printStatement("Welcome to Deadwood!");
-
         roomSetUp();
-
         dealSceneCards();
 
         handlePlayerCountInput();
