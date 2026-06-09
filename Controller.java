@@ -180,6 +180,7 @@ public class Controller {
                 }
                 if (handleMove()) {
                     completedFirstStepAction = true;
+                    refreshDashboard();
                 }
                 break;
             case "a":
@@ -189,11 +190,13 @@ public class Controller {
                 }
                 if (handleAct()) {
                     completedFirstStepAction = true;
+                    refreshDashboard();
                 }
                 break;
             case "t":
                 // Taking a role is allowed at any point during a turn (not a first-step action).
                 handleTakeRole();
+                refreshDashboard();
                 break;
             case "r":
                 if (completedFirstStepAction) {
@@ -202,11 +205,13 @@ public class Controller {
                 }
                 if (handleRehearse()) {
                     completedFirstStepAction = true;
+                    refreshDashboard();
                 }
                 break;
             case "u":
                 // Upgrading is an optional action and does not count as the first-step action.
                 handleUpgrade();
+                refreshDashboard();
                 break;
             case "e":
                 // End turn — advance to the next player.
@@ -588,35 +593,48 @@ public class Controller {
         Player current = moderator.getCurrentPlayer();
         int playerNum = moderator.getCurrentPlayerNum() + 1;
         
-        boolean isOnScene = current.getRoom() instanceof ActingSet;
+        boolean onSet = current.getRoom() instanceof ActingSet;
         int budget = 0;
         boolean isRevealed = true;
         
-        if (isOnScene) {
+        if (onSet) {
             ActingSet actingSet = (ActingSet) current.getRoom();
             if (actingSet.getSceneCard() != null) {
                 budget = actingSet.getSceneCard().getBudget();
             }
         }
 
-        String availableMoves = "";
-        if (!completedFirstStepAction) availableMoves += "[Move] "; //
-        if (current.hasRole()) availableMoves += "[Act] [Rehearse] "; //
-        else if (isOnScene) availableMoves += "[Take Role] ";
-        availableMoves += "[End Turn]"; //
+        StringBuilder availableMoves = new StringBuilder();
 
-        // Assemble the clean DTO payload
+        if (completedFirstStepAction) {
+            availableMoves.append("[End Turn]");
+
+            if (onSet && !current.hasRole()) {
+                availableMoves.append("[Take Role] ");
+            }
+        } else {
+            if (current.hasRole()) {
+                availableMoves.append("[Act] [Rehearse] [End Turn]");
+            } else {
+                availableMoves.append("[Move] ");
+                if (onSet) {
+                    availableMoves.append("[Take Role] ");
+                }
+                availableMoves.append("[End Turn]");
+            }
+        }
+
         PlayerDTO dto = new PlayerDTO(
             playerNum,
             current.getImg(),
             current.getRank(),
             current.getDollars(),
             current.getCredits(),
-            isOnScene,
+            onSet,
             current.getRehearsalBonus(current.getRole()),
             budget,
             isRevealed,
-            availableMoves
+            availableMoves.toString()
         );
 
         view.updatePlayerInfo(dto);
