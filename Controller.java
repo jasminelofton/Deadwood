@@ -326,11 +326,11 @@ public class Controller {
 
             if (success) {
                 view.printStatement("Success! Your acting roll succeeded. A shot counter has been removed!");
+                view.removerShotCounter((ActingSet)currentPlayer.getRoom());
             } else {
                 view.printStatement("Failure! Your acting roll was too low. Better luck next time!");
             }
 
-            view.removerShotCounter((ActingSet)currentPlayer.getRoom());
 
             if (wrapScene) {
                 view.removeSceneCard((ActingSet)currentPlayer.getRoom());
